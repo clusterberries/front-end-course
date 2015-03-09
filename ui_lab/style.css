@@ -1,0 +1,118 @@
+/***** GENERAL *****/
+
+body {
+	margin: 5px auto;
+	max-width: 1000px;
+	min-width: 600px;
+	font-family: Verdana, sans-serif;
+}
+
+header, .vertnav {
+	background-color: #d9d9d9;
+}
+
+/* Navigation */
+nav {
+	background-color: #3b3b3b;
+	color: #FFF;
+}
+
+nav li a {
+	color: #FFF;
+	text-decoration: none;
+}
+
+nav li.current {
+	background-color: #FFF;
+	color: #000;
+}
+
+nav li:not(.current):hover {
+	background-color: #808080;
+
+}
+
+
+/***** HEADER *****/
+
+header {
+	clear: both;
+	padding-top: 10px;
+	color: #707070;
+}
+
+header nav {
+	margin-top: 20px;
+	padding: 10px 0px;
+	clear: both;
+}
+
+header img {
+	height: 120px;
+	float: left;
+	margin: 0px 15px 5px 5px;
+}
+
+h1, header p {
+	font-weight: normal;
+	margin: 0;
+	font
+}
+
+header ul {
+	margin: 0px;
+	padding: 0px;
+}
+
+header li {
+	display: inline;
+	list-style: none;
+	padding: 10px;
+}
+
+
+/***** MAIN CONTENT *****/
+
+.main {
+	margin-top: 10px;
+}
+
+/* Menu */
+.vertnav {
+	height: 450px;
+	width: 270px;
+	padding: 10px;
+	float: left;
+}
+
+.vertnav ul {
+	padding: 0px;
+	margin: 0px;
+}
+
+.vertnav li {
+	text-align: center;
+	list-style: none;
+	padding: 10px;
+}
+
+.vertnav li.current {
+	text-decoration: underline;
+}
+
+/* Content */
+
+.content {
+	padding: 10px;
+	margin-left: 290px;
+}
+
+.content p, .content ul {
+	line-height: 1.5;
+	font-size: 0.9em;
+}
+
+h2, h3 {
+	font-weight: normal;
+	margin: 0;
+}
