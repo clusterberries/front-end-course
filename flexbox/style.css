@@ -1,0 +1,187 @@
+/***** GENERAL *****/
+
+* {
+	margin: 0px;
+	font-family: Verdana, sans-serif;
+}
+
+main {
+	max-width: 1000px;
+	margin: auto;
+	font-size: 0.8rem;
+}
+
+header, footer {
+	background-color: #aaa;
+	padding: 5px;
+	height: 70px;
+}
+
+nav {
+	background-color: #dedede;
+	width: 20%;
+	padding: 5px;
+}
+
+.content {
+	background-color: #ccc;
+	width: 65%;
+}
+
+aside {
+	background-color: #eee;
+	width: 15%;
+	padding: 5px;
+}
+
+main, .content, .block {
+	display: flex;
+	flex-direction: column;
+}
+
+.mainblock, article {
+	display: flex;
+	justify-content: space-between;
+	/*align-items: stretch;*/
+}
+
+
+/** Navigation **/
+
+nav ul {
+	padding: 5px;
+	list-style-type: none;
+}
+
+
+/** Content **/
+
+.block {
+	background-color: #fff;
+	margin: 10px;
+	border-radius: 10px;
+	padding: 10px;
+}
+
+img {
+	width: 200px;
+	height: 200px;
+	margin-right: 10px;
+	flex-shrink: 0;
+}
+
+.content h3 {
+	text-align: center;
+	margin-bottom: 5px;
+
+}
+
+/*
+nav {
+	background-color: #3b3b3b;
+	color: #FFF;
+}
+
+nav li a {
+	color: #FFF;
+	text-decoration: none;
+}
+
+nav li.current {
+	background-color: #FFF;
+	color: #000;
+}
+
+nav li:not(.current):hover {
+	background-color: #808080;
+
+}
+
+
+
+
+header {
+	clear: both;
+	padding-top: 10px;
+	color: #707070;
+}
+
+header nav {
+	margin-top: 20px;
+	padding: 10px 0px;
+	clear: both;
+}
+
+header img {
+	height: 120px;
+	float: left;
+	margin: 0px 15px 5px 5px;
+}
+
+h1, header p {
+	font-weight: normal;
+	margin: 0;
+	font
+}
+
+header ul {
+	margin: 0px;
+	padding: 0px;
+}
+
+header li {
+	display: inline;
+	list-style: none;
+	padding: 10px;
+}
+
+
+
+
+
+.main {
+	margin-top: 10px;
+}
+
+
+
+.vertnav {
+	height: 450px;
+	width: 270px;
+	padding: 10px;
+	float: left;
+}
+
+.vertnav ul {
+	padding: 0px;
+	margin: 0px;
+}
+
+.vertnav li {
+	text-align: center;
+	list-style: none;
+	padding: 10px;
+}
+
+.vertnav li.current {
+	text-decoration: underline;
+}
+
+
+
+
+.content {
+	padding: 10px;
+	margin-left: 290px;
+}
+
+.content p, .content ul {
+	line-height: 1.5;
+	font-size: 0.9em;
+}
+
+h2, h3 {
+	font-weight: normal;
+	margin: 0;
+}
+*/
