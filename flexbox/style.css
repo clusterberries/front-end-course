@@ -6,7 +6,7 @@
 }
 
 main {
-	max-width: 1000px;
+	max-width: 1200px;
 	margin: auto;
 	font-size: 0.8rem;
 }
@@ -19,13 +19,13 @@ header, footer {
 
 nav {
 	background-color: #dedede;
-	width: 20%;
+	width: 15%;
 	padding: 5px;
 }
 
 .content {
 	background-color: #ccc;
-	width: 65%;
+	width: 70%;
 }
 
 aside {
@@ -34,7 +34,7 @@ aside {
 	padding: 5px;
 }
 
-main, .content, .block {
+main, .content, .block, aside {
 	display: flex;
 	flex-direction: column;
 }
@@ -48,140 +48,72 @@ main, .content, .block {
 
 /** Navigation **/
 
+nav input, .fa-bars {
+	display: none;
+	visibility: hidden;
+}
+
+nav h3 {
+	margin: -25px 0 10px 10px;
+}
+
 nav ul {
 	padding: 5px;
 	list-style-type: none;
 }
 
+nav a {
+	color: #000;
+	text-decoration: none;
+	font-size: 1.1em
+}
+
+nav a:hover {
+	color: #d73923;
+}
+
+nav .fa {
+	margin: 5px;
+	font-size: 2em;
+	color: #333;
+}
 
 /** Content **/
 
-.block {
+.content .block {
 	background-color: #fff;
 	margin: 10px;
 	border-radius: 10px;
 	padding: 10px;
 }
 
-img {
-	width: 200px;
-	height: 200px;
-	margin-right: 10px;
-	flex-shrink: 0;
-}
-
 .content h3 {
 	text-align: center;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 
 }
 
-/*
-nav {
-	background-color: #3b3b3b;
-	color: #FFF;
+.content .image {
+	margin-right: 10px;
+	flex-shrink: 0;
+	background-image: url(img.png);
+	background-size: cover;
+	background-position: center;
+	min-width: 250px;
+	width: 40%;
+	height: 250px;
 }
 
-nav li a {
-	color: #FFF;
-	text-decoration: none;
+/** Aside **/
+
+aside {
+	justify-content: flex-start;
+	align-items: center;
 }
 
-nav li.current {
-	background-color: #FFF;
-	color: #000;
+aside div {
+	margin: 5px;
+	background-color: #ccc;
+	width: 150px;
+	height: 150px;
 }
-
-nav li:not(.current):hover {
-	background-color: #808080;
-
-}
-
-
-
-
-header {
-	clear: both;
-	padding-top: 10px;
-	color: #707070;
-}
-
-header nav {
-	margin-top: 20px;
-	padding: 10px 0px;
-	clear: both;
-}
-
-header img {
-	height: 120px;
-	float: left;
-	margin: 0px 15px 5px 5px;
-}
-
-h1, header p {
-	font-weight: normal;
-	margin: 0;
-	font
-}
-
-header ul {
-	margin: 0px;
-	padding: 0px;
-}
-
-header li {
-	display: inline;
-	list-style: none;
-	padding: 10px;
-}
-
-
-
-
-
-.main {
-	margin-top: 10px;
-}
-
-
-
-.vertnav {
-	height: 450px;
-	width: 270px;
-	padding: 10px;
-	float: left;
-}
-
-.vertnav ul {
-	padding: 0px;
-	margin: 0px;
-}
-
-.vertnav li {
-	text-align: center;
-	list-style: none;
-	padding: 10px;
-}
-
-.vertnav li.current {
-	text-decoration: underline;
-}
-
-
-
-
-.content {
-	padding: 10px;
-	margin-left: 290px;
-}
-
-.content p, .content ul {
-	line-height: 1.5;
-	font-size: 0.9em;
-}
-
-h2, h3 {
-	font-weight: normal;
-	margin: 0;
-}
-*/
