@@ -159,6 +159,7 @@ nav .for-consumers img {
 	position: relative;
 	color: #ffffff;
 	box-shadow: inset 0px 5px 6px -5px #708489;
+	z-index: 1;
 }
 
 .banner .text {
@@ -220,7 +221,7 @@ nav .for-consumers img {
 /** The first block **/
 
 .mainblock .block1 {
-	height: 180px;
+	height: 200px;
 	background-color: #eff8fb;
 	border-bottom: 7px solid #eff8fb;
 	border-image-source: url(img/wave.png);
@@ -228,6 +229,7 @@ nav .for-consumers img {
  	border-image-repeat: repeat;
  	text-align: center;
  	position: relative;
+ 	margin-top: -20px;
 }
 
 .block1 div {
@@ -239,7 +241,7 @@ nav .for-consumers img {
 .block1 .monetize,
 .block1 .arrow {
 	position: absolute;
-	margin-top: 20px;
+	margin-top: 40px;
 	
 }
 .block1 .capture {
@@ -312,7 +314,8 @@ nav .for-consumers img {
 	border: 6px solid #addfd3;
 	background-size: 170%;
 	background-position: 20% 20%;
-	margin-left: 25px;
+	margin-left: auto;
+	margin-right: auto;
 }
 .block2 .img1 {
 	background-image: url(img/img_circle1.png);
@@ -399,6 +402,7 @@ footer {
 	color: #69858e;
 	background-color: #295b69;
 	box-shadow: inset 0px 5px 6px -5px #1d4049;
+	clear: both;
 }
 
 footer .email a {
@@ -443,7 +447,7 @@ footer li a:hover {
 }
 
 footer img {
-	margin: 15px 5px;
+	margin: 15px 5px 15px 0px;
 	opacity: 0.7;
 }
 
