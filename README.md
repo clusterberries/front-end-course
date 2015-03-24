@@ -1,3 +1,3 @@
 ### Your Name here
 ---
-Links to your tasks on gh-pages
+Link to your gh-page
