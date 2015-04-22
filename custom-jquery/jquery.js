@@ -21,10 +21,11 @@ $.element = function JQueryElement(el) { //el is an element, a jquery element, a
 		this.selector = el;
 	}
 
-	if (!this.inf.search(this.nodes)) this.inf.set(this.nodes.slice(), {}); // data associated with selector
+	// associate {} with nodes if there is no such element in the map
+	if (!this.inf.search(this.nodes)) this.inf.set(this.nodes.slice(), {}); 
 }
 
-// without params or parameter is a string or a function
+// without parameters or parameter is a string or a function
 $.element.prototype.html = function() { 
 	var arg;
 
@@ -205,13 +206,11 @@ $.element.prototype.css = function() {
 	return this;
 }
 
-//TODO: not enurable?? private!
-$.element.prototype.inf = new Map(); // store arbitrary data, keys are arrays
+$.element.prototype.inf = new Map(); // store arbitrary data, keys are arrays of nodes
 
 // search array in keys of the map
 $.element.prototype.inf.search = function (arr) {
-	console.log(this);
-	for (var el of this) {
+	for (var el of this.keys()) {
 		if (compareArrays(el, arr)) return this.get(el);
 	}
 }
@@ -231,7 +230,7 @@ function compareArrays(arr, arr2) {
     return on === arr.length ? true : false;
 }
 
-// (key, value), (obj), (key), ()
+// parameters: (key, value), (obj), (key), ()
 $.element.prototype.data = function() {
 	var inf = this.inf.search(this.nodes);
 	if (arguments.length === 0) return inf;
@@ -243,10 +242,12 @@ $.element.prototype.data = function() {
 			for (var i in arguments[0]) {
 				if (arguments[0].hasOwnProperty(i)) inf[i] = arguments[0][i]; 
 			}
+			return this;
 		}
 	}
 	else {
 		inf[arguments[0]] = arguments[1];
+		return this;
 	}
 }
 
@@ -255,7 +256,7 @@ $.element.prototype.data = function() {
 $.element.prototype.on = function(events) {
 	var handler = arguments[arguments.length - 1]; 
 	var new_handler; 
-	// if one of parameters is data
+	// create new handler if one of the parameters is data
 	if (arguments.length === 4 || (arguments.length === 3 && typeof arguments[1] !== "string")) {
 		var a = arguments.length === 4 ? arguments[2] : arguments[1];
 		// handler with data
@@ -264,10 +265,14 @@ $.element.prototype.on = function(events) {
 			handler.apply(this, arguments);
 		}
 	}
+	// if parameter is a selector
 	if (typeof arguments[1] === "string") { 
+		// call this function without selector for children
 		if (arguments.length === 3) // no data
 			this.children(arguments[1]).on(arguments[0], arguments[2]);
-		else this.children().on(arguments[0], arguments[2], arguments[3]);
+		else if (arguments.length === 4) {
+			this.children(arguments[1]).on(arguments[0], arguments[2], arguments[3]);
+		}
 	}
 	else {
 		// event types are space-separated
@@ -279,18 +284,6 @@ $.element.prototype.on = function(events) {
 				else {
 					this.nodes[i].addEventListener(events[j], new_handler);
 				}
-				//	if (typeof arguments[1] === "string") { 
-					//	if(this.nodes[i].matches(arguments[1])) {
-							/*if (arguments.length === 3) // no data
-								this.nodes[i].addEventListener(events[j], handler);
-							else 
-								this.nodes[i].addEventListener(events[j], new_handler);
-					//	}
-					}
-					else {
-						this.nodes[i].addEventListener(events[j], new_handler);
-					}
-				}*/
 			}
 		}
 	}
@@ -298,6 +291,7 @@ $.element.prototype.on = function(events) {
 }
 
 // almost as method on, but handler is executed at most once per element per event type
+// but this method is incorrect when one of the parameters is data. I hasn't fix this yet
 $.element.prototype.one = function() {
 	var old_handler = arguments[arguments.length - 1];
 	var handler = function() {
