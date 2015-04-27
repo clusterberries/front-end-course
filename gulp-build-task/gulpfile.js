@@ -20,10 +20,12 @@ gulp.task('compress', function() {
 });
 
 
-gulp.task('default', function () {
+gulp.task('css', function () {
     gulp.src(['node_modules/todomvc-common/*.css', 'node_modules/todomvc-app-css/*.css'])
         .pipe(cssmin())
         .pipe(rename({suffix: '.min'}))
         .pipe(concat('all.css'))
         .pipe(gulp.dest('dist/'));
 });
+
+gulp.task('default', ['lint', 'compress', 'css']);
