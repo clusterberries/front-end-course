@@ -11,7 +11,9 @@ $(function() {
 	new Game().init();
 
 	// init game again if startOver btn was clicked
-
+	$('#startOver').on('click', function() {
+		new Game().init();
+	});
 
 });
 
@@ -34,24 +36,32 @@ Game.prototype.init = function() {
 
 Game.prototype.clean = function() {
 	// clear game and images containers and #moves span
-
+	$('#game').empty();
+	$('#images').empty();
+	$('#moves').html(this.moves);
 
 };
 
 Game.prototype.createTowers = function() {
-	var tower;
+	var tower, towerEl;
 	for (var i = 0; i < NUM_TOWERS; i++) {
 
 		// here we are creating tower obj calling constructor and passing all the parameters
 		// pay attention to the context of dropHandler, take a look at handleDrop first
-		tower = // ...
+		// num, width, height, xwidth, dropHandler
+		tower = new Tower(i, TOWER_WIDTH, TOWER_HEIGHT, TOWER_XWIDTH, $.proxy(this.handleDrop, this));
 		this.towers.push(tower);
 
 		// create tower element and add it to game container
+		towerEl = tower.createElement();
+		$('#game').append(towerEl);
+		towerEl = tower.createImageElement();
+		$('#images').append(towerEl);
 
 	}
 	// create tower image element and add it to images container
-
+/*	towerEl = tower.createImageElement();
+	$('#images').append(towerEl);*/
 };
 
 Game.prototype.initTowers = function() {
@@ -61,15 +71,18 @@ Game.prototype.initTowers = function() {
 };
 
 Game.prototype.createDisks = function() {
+	var diskEl;
 	for (var i = 0; i < this.numDisks; i++) {
 
 		// here we are creating disk obj calling constructor and passing all the parameters
 		// pay attention to the context of dragHandler, take a look at handleDrag first
-		var disk = //...
+		// num, width, height, dragHandler
+		var disk = new Disk(i, DISK_WIDTHS[i], DISK_HEIGHT, $.proxy(this.handleDrag, this));
 		this.disks.push(disk);
 
 		// create disk image element and add it to game container
-
+		diskEl = disk.createImageElement();
+		$('#game').append(diskEl);
 	}
 	for (var j = this.numDisks - 1; j >= 0; j--) {
 		this.towers[0].addDisk(this.disks[j]);
@@ -98,16 +111,17 @@ Game.prototype.updateDraggableDisks = function() {
 Game.prototype.handleDrag = function(event, ui) {
 	// set draggableRevert for dragged element
 
-	this.getDisk("dragged disk").setDraggableRevert(true);
+	this.getDisk($(event.target)).setDraggableRevert(true);
 };
 
 Game.prototype.handleDrop = function(event, ui) {
 	// pass to getTower and getDisk methods proper params
-	var tower = this.getTower("here is tower where disk is dropped");
-	var disk = this.getDisk("here should be dragged disk elem");
+	var tower = this.getTower($(event.target)); // here is tower where disk is dropped
+	var disk = this.getDisk(ui.draggable); // here should be dragged disk elem
 	if (tower.getNum() != disk.getTower().getNum()) {
 		this.moves++;
 		// update moves span
+		$('#moves').html(this.moves);
 		if (tower.canPlaceDisk(disk)) {
 			disk.setDraggableRevert(false);
 			tower.moveDisk(disk);
@@ -124,6 +138,7 @@ Game.prototype.checkSolved = function() {
 			alert("Solved in " + this.moves + " moves.");
 
 			// start the game again
+			new Game().init();
 
 			break;
 		}

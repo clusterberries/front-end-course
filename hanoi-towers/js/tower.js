@@ -18,24 +18,27 @@ Tower.prototype.getDisks = function() {
 
 // returns jquery obj, containing canvas selected by id
 Tower.prototype.getElement = function() {
-
+	return $('#tower' + this.num);
 };
 
 // returns jquery obj, containing image of specific tower selected by id
 Tower.prototype.getImageElement = function() {
-
+	return $('#towerimg' + this.num);
 };
 
 // creates and returns jquery obj, containing canvas elem
 // for ex. <canvas class="tower" id="tower1" width="100" height="18" />
 Tower.prototype.createElement = function() {
-
+	var canvasString = '<canvas class="tower" id="tower' + this.num 
+		+ '" width="' + this.width + 'px" height="' + this.height + 'px" />';
+	return $(canvasString);
 };
 
 // creates and returns jquery obj containing image of a tower
 // <img id="towerimg1" src="img/tower.gif" />
 Tower.prototype.createImageElement = function() {
-
+	var imgString = '<img id="towerimg' + this.num + '" src="img/tower.gif" />';
+	return $(imgString);
 };
 
 Tower.prototype.init = function() {
@@ -50,7 +53,7 @@ Tower.prototype.draw = function() {
 Tower.prototype.loadImage = function(event) {
 	var elem = this.getElement();
 	var ctx = elem.get(0).getContext("2d");
-	var img = // assign loaded image jquery obj
+	var img = $(event.target);// assign loaded image jquery obj
 	ctx.drawImage(img.get(0), (this.width - this.xwidth) / 2, 0, this.xwidth, this.height - this.xwidth);
 	ctx.strokeRect((this.width - this.xwidth) / 2, 0, this.xwidth - 1, this.height - this.xwidth - 1);
 };
@@ -59,7 +62,7 @@ Tower.prototype.setDroppable = function() {
 	var img = this.getElement();
 
 	// make elem droppable and attach drop handler
-
+	img.droppable({drop: this.dropHandler});
 };
 
 Tower.prototype.addDisk = function(disk) {
