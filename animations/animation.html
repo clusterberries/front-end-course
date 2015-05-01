@@ -4,10 +4,18 @@
   <meta charset="utf-8">
   <title>Animation</title>
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
 </head>
 
 <body>
-  <button id="addButton">Add toast</button>
+  <button class="addButton" id="addButton">Add toast</button><br>
+  <div class="icons" id="iconsContainer">
+  	<a href="#"><i class="fa fa-camera"></i></a>
+  	<a href="#"><i class="fa fa-video-camera"></i></a>
+  	<a href="#"><i class="fa fa-comments"></i></a>
+  </div>
+  <button class="showButton" id="showButton">+</button>
+
   <div class="toasts" id="toastsContainer"></div>
 
   <script type="text/javascript" src="script.js"></script>

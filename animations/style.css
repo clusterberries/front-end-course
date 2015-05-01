@@ -1,26 +1,32 @@
 /*** General ***/
+* {
+  margin: 0;
+  padding: 0;
+}
 body {
   background: #2a221e;
   font-family: sans-serif;
 }
 
 button {
-  font-size: 1.05em;
-  padding: 17px 20px ;
-  margin: 10px;
-  background: #766055;
-  color: #fff;
-  border-radius: 5px;
   border: none;
   outline: none;
   transition: 0.5s;
+  margin: 10px;
 }
 
-button:hover {
+/* Toasts */
+button.addButton {
+  font-size: 1.05em;
+  padding: 17px 20px ;
+  background: #766055;
+  color: #fff;
+  border-radius: 5px;
+}
+button.addButton:hover {
   background: #C19D8B;
 }
-
-button:active {
+button.addButton:active {
   position: relative;
   top: 2px;
   left: 1px;
@@ -54,26 +60,80 @@ button:active {
   background: #8283C2;
 }
 
+/* Icons */
+.icons {
+  margin: 15px;
+  font-size: 2.3em;
+  display: inline-block;
+  width: 0px;
+  height: 57px;
+  overflow: hidden;
+  position: absolute;
+}
+.icons.showed {
+  -webkit-animation: showIcons 0.7s ease forwards;
+          animation: showIcons 0.7s ease forwards;
+}
+.icons.hidden {
+  width: 200px;
+  -webkit-animation: hideIcons 1.8s forwards;
+          animation: hideIcons 1.8s forwards;
+}
+
+.icons a {
+  color: #fff;
+}
+
+button.showButton {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #434475;
+  font-size: 3em;
+  color: #fff;
+  position: absolute;
+
+}
+
+button.show {
+  -webkit-animation: show 1.5s ease;
+          animation: show 1.5s ease;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  left: 0;
+}
+
+button.hide {
+  -webkit-animation: hide 1.5s ease;
+          animation: hide 1.5s ease;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+}
+
+.fa {
+  margin: 10px;
+}
+
 /*** Animation ***/
 
 @-webkit-keyframes appear {
   from {
-    transform: translate(300px, 0);
+    transform: translate(350px, 0);
     opacity: 0;
   }
-  20% {
-    transform: translate(-130px, 0);
+  23% {
+    transform: translate(-150px, 0);
   }
-  40% {
+  45% {
     transform: translate(0, 0);
   }
   60% {
     transform: translate(-40px, 0);
   }
-  75% {
+  74% {
     transform: translate(0, 0);
   }
-  90% {
+  88% {
     transform: translate(-7px, 0);
   }
   to {
@@ -81,26 +141,25 @@ button:active {
     opacity: 1;
   }
 }
-
 @keyframes appear {
   from {
-    transform: translate(300px, 0);
+    transform: translate(350px, 0);
     opacity: 0;
   }
-  30% {
+  23% {
     transform: translate(-150px, 0);
   }
-  60% {
+  45% {
     transform: translate(0, 0);
   }
-  73% {
+  60% {
     transform: translate(-40px, 0);
   }
-  86% {
+  74% {
     transform: translate(0, 0);
   }
-  93% {
-    transform: translate(-15px, 0);
+  88% {
+    transform: translate(-7px, 0);
   }
   to {
     transform: translate(0, 0);
@@ -116,12 +175,106 @@ button:active {
     opacity: 0;
   }
 }
-
 @keyframes disappear {
   form {
     opacity: 1;
   }
   to {
     opacity: 0;
+  }
+}
+
+/*show or hide the button*/
+@-webkit-keyframes show {
+  to {
+    transform: translate(210px, 0) rotate(315deg);
+  }
+}
+@keyframes show {
+  to {
+    transform: translate(210px, 0) rotate(315deg);
+  }
+}
+
+@-webkit-keyframes hide {
+  from {
+    transform: translate(210px, 0) rotate(315deg);
+  }
+  to {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+@keyframes hide {
+  from {
+    transform: translate(210px, 0) rotate(315deg);
+  }
+  to {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+
+/*show or hide the icons*/
+@-webkit-keyframes showIcons {
+  form {
+    width: 0px;
+  }
+  33% {
+    width: 100px;
+  }
+  66% {
+    width: 150px
+  }
+  to {
+    width: 200px;
+  }
+}
+@keyframes showIcons {
+  form {
+    width: 0px;
+  }
+  33% {
+    width: 100px;
+  }
+  66% {
+    width: 150px
+  }
+  to {
+    width: 200px;
+  }
+}
+
+@-webkit-keyframes hideIcons {
+  form {
+    width: 200px;
+  }
+
+  10% {
+    width: 200px;
+  }
+
+  63% {
+    width: 100px;
+  }
+
+  to {
+    width: 0px;
+  }
+}
+@keyframes hideIcons {
+  form {
+    width: 200px;
+  }
+
+  10% {
+    width: 200px;
+  }
+
+  63% {
+    width: 100px;
+  }
+
+  to {
+    width: 0px;
   }
 }
