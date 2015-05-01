@@ -1,0 +1,127 @@
+/*** General ***/
+body {
+  background: #2a221e;
+  font-family: sans-serif;
+}
+
+button {
+  font-size: 1.05em;
+  padding: 17px 20px ;
+  margin: 10px;
+  background: #766055;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  transition: 0.5s;
+}
+
+button:hover {
+  background: #C19D8B;
+}
+
+button:active {
+  position: relative;
+  top: 2px;
+  left: 1px;
+}
+
+.toasts {
+  width: 350px;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+}
+
+.toast {
+  padding: 15px;
+  color: #fff;
+  margin: 5px;
+  border-radius: 5px;
+  -webkit-animation: appear 1.5s, disappear 1s ease-in 4s;
+          animation: appear 1.5s, disappear 1s ease-in 4s;
+}
+.toast.err {
+   background: #8F5958; 
+}
+.toast.success {
+  background: #3D836A; 
+}
+.toast.warn {
+  background: #E1A746;
+}
+.toast.mess {
+  background: #8283C2;
+}
+
+/*** Animation ***/
+
+@-webkit-keyframes appear {
+  from {
+    transform: translate(300px, 0);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-130px, 0);
+  }
+  40% {
+    transform: translate(0, 0);
+  }
+  60% {
+    transform: translate(-40px, 0);
+  }
+  75% {
+    transform: translate(0, 0);
+  }
+  90% {
+    transform: translate(-7px, 0);
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes appear {
+  from {
+    transform: translate(300px, 0);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-150px, 0);
+  }
+  60% {
+    transform: translate(0, 0);
+  }
+  73% {
+    transform: translate(-40px, 0);
+  }
+  86% {
+    transform: translate(0, 0);
+  }
+  93% {
+    transform: translate(-15px, 0);
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes disappear {
+  form {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes disappear {
+  form {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
