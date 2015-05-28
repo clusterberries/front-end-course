@@ -1,15 +1,19 @@
-var container, pages, lis, startPosition, searchInput;
-var position = 0; // position of the container with videos
-var resultsCount = 15;
-var veryBasicLink = 'https://www.googleapis.com/youtube/v3/';
-var youTubeKey = 'key=AIzaSyCTWC75i70moJLzyNh3tt4jzCljZcRkU8Y'
-var basicLink = veryBasicLink + 'search?' + youTubeKey + '&type=video' + '&part=snippet&maxResults=';
+var container, 
+    pages, 
+    lis, 
+    searchInput,
+    position = 0, // position of the container with videos
+    countVideosOnPage;
+
+var VERY_BASIC_LINK = 'https://www.googleapis.com/youtube/v3/';
+var YOUTUBE_KEY = 'key=AIzaSyCTWC75i70moJLzyNh3tt4jzCljZcRkU8Y'
+var BASIC_LINK = VERY_BASIC_LINK + 'search?' + YOUTUBE_KEY + '&type=video' + '&part=snippet&maxResults=';
 var nextToken = '';
 
 window.onload = function() {
     // create basic html code
     var main = document.createElement('main');
-    main.innerHTML = '<header><input type="search" placeholder="Search..."></header>\
+    main.innerHTML = '<header><input type="search" placeholder="Search..." autofocus></header>\
         <ul id="ulContainer" class="container"></ul>\
         <footer><ul id="switchPages" class="pagination"></ul></footer>';
     document.body.appendChild(main);
@@ -18,27 +22,40 @@ window.onload = function() {
     pages = document.getElementById('switchPages');
     searchInput = document.querySelector('input[type="search"]');
 
-    container.addEventListener('mousedown', mouseDownHandler);
+    countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 500 ? 2 : 1); // TODO check this values on practice
 
-    searchInput.addEventListener('keydown', function(event) {
-        // press enter
-        if (event.keyCode === 13) {
+    // start search and load after press enter
+    searchInput.addEventListener('keydown', function(event) {      
+        if (event.keyCode === 13) { // press enter
             // new token
             nextToken = '';
-            // clean container
+            // clean page
             container.innerHTML = '';
+            pages.innerHTML = '';
+            container.style.left = '0px';
+            position = 0;
             // loadData(this.value);      
-            loadData('javascript');      
+            loadData('javascript');   
         }
     });
 
 }
 
+window.onresize = function() {
+    console.log('hhhh!');
+    countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 500 ? 2 : 1);
+    // TODO how to remember current page?
+    // pages.innerHTML = '';
+    repaint();
+    // TODO: new position and new current 
+}
+
 
 // keyword, count
 function loadData (keyword){
+    var resultsCount = 15;
     keyword = '&q=' + encodeURIComponent(keyword);
-    var link = basicLink + resultsCount + keyword + nextToken; 
+    var link = BASIC_LINK + resultsCount + keyword + nextToken; 
     var request = new XMLHttpRequest();
 
     var snippetResponse, staticticsResponse, dataList;
@@ -70,7 +87,7 @@ function loadStatisticsData(firstResponse) {
 
     videoIds = videoIds.join(','); // all ids of videos separated by ','
 
-    link = veryBasicLink + 'videos?' + youTubeKey + 
+    link = VERY_BASIC_LINK + 'videos?' + YOUTUBE_KEY + 
             '&id=' + videoIds + '&part=snippet,statistics';
 
     request.open("GET", link);
@@ -111,25 +128,42 @@ function convertResponseToList(searchResponse, videosResponse) {
     return videosList;
  }
 
+// create elements and add to the container
 function loadVideosToContainer(videosList) {
-    console.log('fff');
-    var element, countOfPages;
+    var element, currNumber = container.getElementsByClassName('item').length;
     for (var i = 0; i < videosList.length; ++i) {
         element = document.createElement('li');
         element.classList.add('item');
         element.innerHTML = videosList[i].title;
-        container.appendChild(element);
+        container.appendChild(element); 
     }
 
-    countOfPages = document.getElementsByClassName('item').length / 3; // TODO count of videos?
+    repaint(currNumber);
+
+    container.addEventListener('mousedown', mouseDownHandler);
+}
+
+// set new width and pagination
+function repaint() { //TODO when add new videos dont delete all pagination
+    var countOfPages = document.getElementsByClassName('item').length / countVideosOnPage;
+    pages.innerHTML = '';
     for (var i = 0; i < countOfPages; ++i) {
         pages.appendChild(document.createElement('li'));
     }
-    lis = pages.getElementsByTagName('li');  
+    lis = pages.getElementsByTagName('li');
+    // lis[numberOfCurrPage].classList.add('currentPage'); // TODO warning! there may be en error! 
+    [].forEach.call(lis, function(item) {
+        item.classList.remove('currentPage');
+    });
+    lis[-position].classList.add('currentPage'); // TODO warning! there may be en error! 
 
-    // handler for clicks on paginations
+    // calculate new width
+    container.style.width = countOfPages * 100 + '%';
+
+    // handler for clicks on pagination
     pages.addEventListener('click', function(event) {
-        var position = -[].indexOf.call(this.children, event.target);
+        if (event.target.tagName !== 'LI') return;
+        position = -[].indexOf.call(this.children, event.target);
         // smooth animation
         container.classList.add('smooth');
          // set new position
@@ -137,33 +171,39 @@ function loadVideosToContainer(videosList) {
 
         // change color of current page in pagination
         [].forEach.call(lis, function(item) {
-            item.style.backgroundColor = '#fff';
+            item.classList.remove('currentPage');
         });
-        event.target.style.backgroundColor = '#ccc';
-
+        event.target.classList.add('currentPage');
     });
 }
 
 
-// DO THIS AFTER SEARCH AND DATA LOADING
 
 
+
+
+/** SWIPE **/
 
 // drag the container and switch the pages
-// container.addEventListener('mousedown', 
 function mouseDownHandler(event) {
-    startPosition = container.getBoundingClientRect().left;
+    var startPosition = this.getBoundingClientRect().left;
     var diff, leftDirection;
     var xPos = event.clientX;
     var delX = xPos - startPosition; // position of the cursor in the container
 
+
     document.body.style.cursor = 'move';
+
     document.onmousemove = function(event) {
         // without this transition is buggy
-        container.style.transition = '';
+        // container.style.transition = '';
+        container.classList.remove('smooth');
+
+        if (Math.abs(xPos - event.clientX) < 7) return;
 
         if (xPos > event.clientX) leftDirection = true;
         else leftDirection = false;
+
         document.onmousemove = function(event) {
             // remove animation
             container.classList.remove('smooth');
@@ -188,33 +228,38 @@ function mouseDownHandler(event) {
         document.body.style.cursor = 'default';
     }
 
+    function switchPage() {
+        var endPosition = container.getBoundingClientRect().left;
+        // smooth animation
+        container.classList.add('smooth');
+
+        diff = startPosition - endPosition;
+        // drag to the left
+        if (diff > 0) { // TODO try to set value 20, for example. Mb it will work?
+            position = Math.floor(endPosition / window.innerWidth);
+            if (-position >= lis.length) {
+                // container.removeEventListener('mousedown', mouseDownHandler);
+                container.style.left = (position * 100) + '%';
+                loadData('javascript'); // TODO how to get keyword here?
+                return;
+            }
+        }
+        // to the right
+        if (diff < 0 && position !== 0) {
+            position = Math.ceil(endPosition / window.innerWidth);
+        }
+        // set new position
+        container.style.left = (position * 100) + '%';
+
+        // change color of current page in pagination
+        [].forEach.call(lis, function(item) {
+            item.classList.remove('currentPage');
+        });
+        lis[-position].classList.add('currentPage');
+    }
 }
 
-
-function switchPage() {
-    var endPosition = container.getBoundingClientRect().left;
-    // smooth animation
-    container.classList.add('smooth');
-
-    diff = startPosition - endPosition;
-    // drag to the left
-    if (diff > 0) { // TODO try to set value 20, for example. Mb it will work?
-        position = Math.floor(endPosition / window.innerWidth);
-        // TODO load new videos!
-    }
-    // to the right
-    if (diff < 0 && position !== 0) {
-        position = Math.ceil(endPosition / window.innerWidth);
-    }
-    // set new position
-    container.style.left = (position * 100) + '%';
-
-    // change color of current page in pagination
-    [].forEach.call(lis, function(item) {
-        item.style.backgroundColor = '#fff';
-    });
-    lis[-position].style.backgroundColor = '#ccc';
-}
+// 
 
 
 

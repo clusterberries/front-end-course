@@ -53,11 +53,8 @@ header input:focus {
 ul.container {
   flex-basis: 80%;
   display: flex;
-  width: 500%;
   position: relative;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
           user-select: none;
 }
 
@@ -65,7 +62,8 @@ ul.container {
   background-color: #fff;
   margin: 10px;
   width: 33.333%;
-
+  -webkit-transition: opacity 0.5s;
+          transition: opacity 0.5s;
 }
 
 .smooth {
@@ -79,12 +77,31 @@ ul.container {
     width: 20px;
     height: 20px;
     border-radius: 10px;
-    background-color: white;
+    background-color: #fff;
     cursor: pointer;
     margin: 0 3px;
 }
 
-.pagination li:nth-child(1) {
+.pagination .currentPage {
   background-color: #ccc;
 }
 
+
+@media screen and (max-width: 800px) {
+  .container li {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .container li {
+    width: 100%;
+  }
+
+  .pagination li {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin: 0 2px;
+}
+}
