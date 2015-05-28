@@ -18,6 +18,8 @@ window.onload = function() {
     pages = document.getElementById('switchPages');
     searchInput = document.querySelector('input[type="search"]');
 
+    container.addEventListener('mousedown', mouseDownHandler);
+
     searchInput.addEventListener('keydown', function(event) {
         // press enter
         if (event.keyCode === 13) {
@@ -65,7 +67,7 @@ function loadStatisticsData(firstResponse) {
     for (var i = 0; i < items.length; ++i) {
         videoIds.push(items[i].id.videoId);
     }
-    debugger;
+
     videoIds = videoIds.join(','); // all ids of videos separated by ','
 
     link = veryBasicLink + 'videos?' + youTubeKey + 
@@ -109,18 +111,48 @@ function convertResponseToList(searchResponse, videosResponse) {
     return videosList;
  }
 
-function loadVideosToContainer() {
+function loadVideosToContainer(videosList) {
+    console.log('fff');
+    var element, countOfPages;
+    for (var i = 0; i < videosList.length; ++i) {
+        element = document.createElement('li');
+        element.classList.add('item');
+        element.innerHTML = videosList[i].title;
+        container.appendChild(element);
+    }
 
+    countOfPages = document.getElementsByClassName('item').length / 3; // TODO count of videos?
+    for (var i = 0; i < countOfPages; ++i) {
+        pages.appendChild(document.createElement('li'));
+    }
+    lis = pages.getElementsByTagName('li');  
+
+    // handler for clicks on paginations
+    pages.addEventListener('click', function(event) {
+        var position = -[].indexOf.call(this.children, event.target);
+        // smooth animation
+        container.classList.add('smooth');
+         // set new position
+        container.style.left = (position * 100) + '%';
+
+        // change color of current page in pagination
+        [].forEach.call(lis, function(item) {
+            item.style.backgroundColor = '#fff';
+        });
+        event.target.style.backgroundColor = '#ccc';
+
+    });
 }
 
 
 // DO THIS AFTER SEARCH AND DATA LOADING
 
-//lis = document.getElementsByTagName('footer')[0].getElementsByTagName('li');  
+
 
 // drag the container and switch the pages
-/*container.addEventListener('mousedown', function(event) {
-    startPosition = this.getBoundingClientRect().left;
+// container.addEventListener('mousedown', 
+function mouseDownHandler(event) {
+    startPosition = container.getBoundingClientRect().left;
     var diff, leftDirection;
     var xPos = event.clientX;
     var delX = xPos - startPosition; // position of the cursor in the container
@@ -156,7 +188,7 @@ function loadVideosToContainer() {
         document.body.style.cursor = 'default';
     }
 
-});*/
+}
 
 
 function switchPage() {
@@ -184,21 +216,7 @@ function switchPage() {
     lis[-position].style.backgroundColor = '#ccc';
 }
 
-// handler for clicks on paginations
-/*pages.addEventListener('click', function(event) {
-    var position = -[].indexOf.call(this.children, event.target);
-    // smooth animation
-    container.classList.add('smooth');
-     // set new position
-    container.style.left = (position * 100) + '%';
 
-    // change color of current page in pagination
-    [].forEach.call(lis, function(item) {
-        item.style.backgroundColor = '#fff';
-    });
-    event.target.style.backgroundColor = '#ccc';
-
-});*/
 
 
 

@@ -30,14 +30,14 @@ header, footer {
   background-color: #888;
   text-align: center;
   flex-basis: 10%;
-  min-height: 35px;
+  min-height: 40px;
   max-height: 45px;
 }
 
 header input {
-  padding: 3px 5px;
-  font-size: 1rem;
-  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border-radius: 12px;
   outline: none;
   border: none;
   background-color: #eee;  
@@ -81,6 +81,7 @@ ul.container {
     border-radius: 10px;
     background-color: white;
     cursor: pointer;
+    margin: 0 3px;
 }
 
 .pagination li:nth-child(1) {
