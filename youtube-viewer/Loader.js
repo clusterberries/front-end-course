@@ -1,7 +1,7 @@
 var Loader = function(container, pagination, resultsCount) {
 	this.container = container;
 	this.pagination = pagination;
-	this.countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 500 ? 2 : 1);
+	this.countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 540 ? 2 : 1);
 	this.position = 0;
 	this._nextToken = '';
 	this.resultsCount = resultsCount;
@@ -31,15 +31,17 @@ Loader.prototype.loadData = function(){
             if (request.status == 200) { 
                     this._loadStatisticsData(request.responseText);
 
+                    // repaint page when change width of window
                     window.onresize = function() {
-		                this.countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 500 ? 2 : 1);
+                        var currentVideo = -this.position * this.countVideosOnPage; // remembet the current video
+		                this.countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 540 ? 2 : 1);
+                        // if there 1 or 2 videos at all change count of videos
 		                if (this.totalResults < this.countVideosOnPage ) {
 					    	this.countVideosOnPage = this.totalResults;
 					    }
-		                // TODO how to remember current page?
-		                // pages.innerHTML = '';
+                        // new position depends on current video
+                        this.position = -Math.floor(currentVideo / this.countVideosOnPage); 
 		                this._repaint();
-		                // TODO: new position and new current 
 		            }.bind(this);
             }
         }    
@@ -77,7 +79,7 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             if (request.status == 200) { 
-                this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText));
+                this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText)); // TODO add listeners to view videos
 
                 // swipe: drag the container and switch the pages
                 this.container.addEventListener('mousedown', function (event) {
@@ -148,7 +150,7 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
             youtubeLink: 'http://www.youtube.com/watch?v=' + searchResponse[i].id.videoId,
             title: searchResponse[i].snippet.title,
             description: searchResponse[i].snippet.description,
-            thumbnailUrl: searchResponse[i].snippet.thumbnails.medium.url,
+            thumbnailUrl: searchResponse[i].snippet.thumbnails.high.url,
             date: new Date(searchResponse[i].snippet.publishedAt).toDateString(), 
             author: videosResponse[i].snippet.channelTitle,
             views: videosResponse[i].statistics.viewCount
@@ -160,11 +162,17 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
 
 // create elements and add to the container
 Loader.prototype._loadVideosToContainer = function(videosList) {
-    var element, currNumber = this.container.getElementsByClassName('item').length;
+    var element, htmlText, currNumber = this.container.getElementsByClassName('item').length;
     for (var i = 0; i < videosList.length; ++i) {
         element = document.createElement('li');
         element.classList.add('item');
-        element.innerHTML = videosList[i].title;
+        htmlText = '<img src="' + videosList[i].thumbnailUrl + '" draggable="false">\
+            <h3><a href="' + videosList[i].youtubeLink + '" draggable="false">' + videosList[i].title + '</a></h3>\
+            <p class="author">by ' + videosList[i].author + '</p>\
+            <p class="date">' + videosList[i].date + '</p>\
+            <p class="views">views: ' + videosList[i].views + '</p>\
+            <p class="description">' + videosList[i].description + '</p>';
+        element.innerHTML = htmlText;
         this.container.appendChild(element); 
     }
 
@@ -178,22 +186,23 @@ Loader.prototype._switchPage = function(startPosition) {
     this.container.classList.add('smooth'); // smooth animation
 
     // drag to the left
-    if (diff > 0) { // TODO try to set value 20, for example. Mb it will work?
+    if (diff > 70) { // TODO try to set value 20, for example. Mb it will work?
         this.position = Math.floor(endPosition / window.innerWidth);
     }
     // to the right
-    if (diff < 0 && this.position !== 0) {
+    if (diff < -70 && this.position !== 0) {
         this.position = Math.ceil(endPosition / window.innerWidth);
     }
     // if the current page is the last load more video
     if (-this.position + 1 >= this.lis.length) {
-        // container.removeEventListener('mousedown', mouseDownHandler);
-        if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
-        	this.position = -(this.lis.length - 1);
-        }
-    	this.container.style.left = (this.position * 100) + '%';
-        this.loadData(); 
         document.onmousemove = null;
+        document.onmouseup = null;
+        document.body.style.cursor = 'default';
+        if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
+            this.position = -(this.lis.length - 1);
+        }
+        this.container.style.left = (this.position * 100) + '%';
+        this.loadData(); 
     }
     else {
 	    // set new position
@@ -220,8 +229,9 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
         item.classList.remove('currentPage');
     });
 
-    // calculate new width
+    // calculate new width and position
     this.container.style.width = countOfPages * 100 + '%';
+    this.container.style.left = (this.position * 100) + '%';
 
     // handler for clicks on pagination
     this.pagination.addEventListener('click', function(event) { // TODO: if the page is the last, load new!!!

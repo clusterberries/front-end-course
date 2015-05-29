@@ -30,7 +30,7 @@ window.onload = function() {
             // javascript00 - 24
             // javascript88 - 1
             // javascript88fhf - 0
-            loader.setKeyword('javascript88');// TODO this.value                
+            loader.setKeyword('javascript');// TODO this.value                
             loader.loadData();
         }
     });
