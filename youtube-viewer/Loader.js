@@ -33,6 +33,9 @@ Loader.prototype.loadData = function(){
 
                     window.onresize = function() {
 		                this.countVideosOnPage = window.innerWidth > 800 ? 3 : (window.innerWidth > 500 ? 2 : 1);
+		                if (this.totalResults < this.countVideosOnPage ) {
+					    	this.countVideosOnPage = this.totalResults;
+					    }
 		                // TODO how to remember current page?
 		                // pages.innerHTML = '';
 		                this._repaint();
@@ -48,14 +51,19 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     var videoIds = [];
     var request = new XMLHttpRequest();
     var link;
-    if (JSON.parse(firstResponse).pageInfo.totalResults === 0) {
+    var responseData = JSON.parse(firstResponse);
+    this.totalResults = responseData.pageInfo.totalResults;
+    if (this.totalResults === 0) {
     	console.log('no items!'); // TODO show some message!
     	return;
     }
-    var items = JSON.parse(firstResponse).items; 
+    // if the videos can be loaded to 
+    if (this.totalResults < this.countVideosOnPage) {
+    	this.countVideosOnPage = this.totalResults;
+    }
 
-    for (var i = 0; i < items.length; ++i) {
-        videoIds.push(items[i].id.videoId);
+    for (var i = 0; i < responseData.items.length; ++i) {
+        videoIds.push(responseData.items[i].id.videoId);
     }
 
     videoIds = videoIds.join(','); // all ids of videos separated by ','

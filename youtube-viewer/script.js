@@ -27,7 +27,10 @@ window.onload = function() {
     searchInput.addEventListener('keydown', function(event) {      
         if (event.keyCode === 13) { // press enter
             loader.cleanPage();
-            loader.setKeyword('javascript00');// TODO this.value                
+            // javascript00 - 24
+            // javascript88 - 1
+            // javascript88fhf - 0
+            loader.setKeyword('javascript88');// TODO this.value                
             loader.loadData();
         }
     });
