@@ -123,8 +123,12 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
     // next page for search
     if (searchResponse.nextPageToken == undefined) this.loadData = function(){
     	console.log('no more data!'); // TODO show message instead of console
-    	this.position = 0;
+    	// this.position++;
     	this.container.style.left = (this.position * 100) + '%';
+    	[].forEach.call(this.lis, function(item) {
+	        item.classList.remove('currentPage');
+	    });
+    	this.lis[-this.position].classList.add('currentPage');
     };
 
     this._nextToken = '&pageToken=' + searchResponse.nextPageToken;
@@ -173,13 +177,15 @@ Loader.prototype._switchPage = function(startPosition) {
     if (diff < 0 && this.position !== 0) {
         this.position = Math.ceil(endPosition / window.innerWidth);
     }
-    this.container.style.left = (this.position * 100) + '%';
     // if the current page is the last load more video
     if (-this.position + 1 >= this.lis.length) {
         // container.removeEventListener('mousedown', mouseDownHandler);
+        if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
+        	this.position = -(this.lis.length - 1);
+        }
+    	this.container.style.left = (this.position * 100) + '%';
         this.loadData(); 
         document.onmousemove = null;
-        // return;
     }
     else {
 	    // set new position
