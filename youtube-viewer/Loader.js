@@ -323,8 +323,6 @@ Loader.prototype.showMessage = function(message){
 /*
 TODO list
 
-add animation
- - smooth load data (smth as in the task animation)
  - add support press arrows to switch page
  - try to change pagination
 */
