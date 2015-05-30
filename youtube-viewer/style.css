@@ -149,10 +149,10 @@ p.description {
 
 .message {
   position: absolute;
-  margin: 10px 15px;
+  margin: 10px;
   top: 0;
   right: 0;
-  padding: 5px 15px;
+  padding: 5px 10px;
   border-radius: 10px;
   background-color: #db6539;
   color: #fff;

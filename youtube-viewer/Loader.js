@@ -75,8 +75,8 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     for (var i = 0; i < responseData.items.length; ++i) {
         videoIds.push(responseData.items[i].id.videoId);
     }
-
-    videoIds = videoIds.join(','); // all ids of videos separated by ','
+    // all ids of videos separated by ','
+    videoIds = videoIds.join(','); 
 
     link = this.VERY_BASIC_LINK + 'videos?' + this.YOUTUBE_KEY + 
             '&id=' + videoIds + '&part=snippet,statistics';
@@ -98,9 +98,7 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
 				    document.body.style.cursor = 'move';
 
 				    document.onmousemove = function(event) {        
-				        // this.container.classList.remove('smooth'); // without this transition is buggy
-
-				        if (Math.abs(xPos - event.clientX) < 7) return; //TODO smth wrong
+				        if (Math.abs(xPos - event.clientX) < 7) return; 
 				        if (xPos > event.clientX) leftDirection = true;
 				        else leftDirection = false;
 				        // after definition of cursor direction create new handler
@@ -133,7 +131,7 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
             }
         }
         else if (request.status !== 200) {
-            this.showMessage('Error! Status: ' + request.status + ' ');
+            this.showMessage('Error! Status: ' + request.status);
         }
     }.bind(this);
 }
@@ -192,27 +190,29 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
     this._repaint();
 }
 
+// scroll current page to the beginning of window when swipe or mouseup
 Loader.prototype._switchPage = function(startPosition) {
     var endPosition = this.container.getBoundingClientRect().left;
     var diff = startPosition - endPosition;
     
     this.container.classList.add('smooth'); // smooth animation
 
-    // drag to the left
+    // if drag to the left
     if (diff > 70) {
         this.position = Math.floor(endPosition / window.innerWidth);
     }
-    // to the right
+    // if to the right
     if (diff < -70 && this.position !== 0) {
         this.position = Math.ceil(endPosition / window.innerWidth);
     }
-    // if the current page is the last load more video
+    // load more video if the current page is the last 
     if (-this.position + 1 >= this.lis.length) {
         document.body.style.cursor = 'default';
         if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
             this.position = -(this.lis.length - 1);
         }
         this.loadData(); 
+        // dont switch pages before data loads
         document.onmousemove = null;
         document.onmouseup = null;
     }
@@ -227,8 +227,8 @@ Loader.prototype._switchPage = function(startPosition) {
     this.container.style.left = (this.position * 100) + '%';
 }
 
-// set new width and pagination
-Loader.prototype._repaint = function(){ //TODO when add new videos dont delete all pagination
+// set new width, position and pagination
+Loader.prototype._repaint = function(){ 
     var countOfPages = document.getElementsByClassName('item').length / this.countVideosOnPage;
     this.pagination.innerHTML = '';
     for (var i = 0; i < countOfPages; ++i) {
@@ -245,7 +245,7 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
     this.container.style.left = (this.position * 100) + '%';
 
     // handler for clicks on pagination
-    this.pagination.onclick = function(event) { // TODO: if the page is the last, load new!!!
+    this.pagination.onclick = function(event) {
         if (event.target.tagName !== 'LI') return;
         this.position = -[].indexOf.call(this.pagination.children, event.target); 
         // smooth animation
@@ -260,15 +260,15 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
         event.target.classList.add('currentPage');
 
         if (-this.position === this.lis.length - 1) {
-            this.pagination.onclick = null;
             this.loadData(); 
+            //this.pagination.onclick = null; // TODO: without this line loading was buggy. But now?..
         }
     }.bind(this);
 
-    this.lis[-this.position].classList.add('currentPage'); // TODO warning! there may be en error! 
+    this.lis[-this.position].classList.add('currentPage');
 }
 
-
+// delete all content on page
 Loader.prototype.cleanPage = function(){
     // clean page
     this.container.innerHTML = '';
@@ -279,6 +279,7 @@ Loader.prototype.cleanPage = function(){
     this.position = 0;
 };
 
+// show message in the top right corner
 Loader.prototype.showMessage = function(message){
     var el = document.createElement('div');
     el.classList.add('message');
@@ -305,4 +306,5 @@ add animation
  - smooth load data (smth as in the task animation)
  - show number of page when hover
  - add support press arrows to switch page
+ - try to change pagination
 */
