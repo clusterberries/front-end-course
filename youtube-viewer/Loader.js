@@ -18,6 +18,7 @@ Loader.prototype.setKeyword = function(keyword) {
 
 // the first request
 Loader.prototype.loadData = function(){
+    console.log('loadData');
 	var keywordLink = '&q=' + encodeURIComponent(this.keyword);
     var link = this.BASIC_LINK + this.resultsCount + keywordLink + this._nextToken; 
     var request = new XMLHttpRequest();
@@ -29,6 +30,7 @@ Loader.prototype.loadData = function(){
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             if (request.status == 200) { 
+                console.log('onreadystatechange loadData');
                     this._loadStatisticsData(request.responseText);
 
                     // repaint page when change width of window
@@ -50,6 +52,7 @@ Loader.prototype.loadData = function(){
 
 // the second request by id to load normal title and count of views
 Loader.prototype._loadStatisticsData = function(firstResponse) {
+    console.log('loadStatisticsData');
     var videoIds = [];
     var request = new XMLHttpRequest();
     var link;
@@ -79,6 +82,7 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             if (request.status == 200) { 
+                console.log('onreadystatechange loadStatisticsData');
                 this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText)); // TODO add listeners to view videos
 
                 // swipe: drag the container and switch the pages
@@ -90,9 +94,9 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
 				    document.body.style.cursor = 'move';
 
 				    document.onmousemove = function(event) {        
-				        this.container.classList.remove('smooth'); // without this transition is buggy
+				        // this.container.classList.remove('smooth'); // without this transition is buggy
 
-				        if (Math.abs(xPos - event.clientX) < 7) return;
+				        if (Math.abs(xPos - event.clientX) < 7) return; //TODO smth wrong
 				        if (xPos > event.clientX) leftDirection = true;
 				        else leftDirection = false;
 				        // after definition of cursor direction create new handler
@@ -151,7 +155,7 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
             title: searchResponse[i].snippet.title,
             description: searchResponse[i].snippet.description,
             thumbnailUrl: searchResponse[i].snippet.thumbnails.high.url,
-            date: new Date(searchResponse[i].snippet.publishedAt).toDateString(), 
+            date: new Date(searchResponse[i].snippet.publishedAt).toDateString().slice(4), 
             author: videosResponse[i].snippet.channelTitle,
             views: videosResponse[i].statistics.viewCount
         };
@@ -176,6 +180,7 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
         this.container.appendChild(element); 
     }
 
+    console.log('loadvideostoContainer');
     this._repaint();
 }
 
@@ -186,7 +191,7 @@ Loader.prototype._switchPage = function(startPosition) {
     this.container.classList.add('smooth'); // smooth animation
 
     // drag to the left
-    if (diff > 70) { // TODO try to set value 20, for example. Mb it will work?
+    if (diff > 70) {
         this.position = Math.floor(endPosition / window.innerWidth);
     }
     // to the right
@@ -195,29 +200,32 @@ Loader.prototype._switchPage = function(startPosition) {
     }
     // if the current page is the last load more video
     if (-this.position + 1 >= this.lis.length) {
-        document.onmousemove = null;
-        document.onmouseup = null;
         document.body.style.cursor = 'default';
         if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
             this.position = -(this.lis.length - 1);
         }
-        this.container.style.left = (this.position * 100) + '%';
+        // this.container.style.left = (this.position * 100) + '%';
         this.loadData(); 
+        console.log('pos ' + (-this.position) + '\tlis ' + (this.lis.length - 1));
+        document.onmousemove = null;
+        document.onmouseup = null;
     }
     else {
 	    // set new position
-	    this.container.style.left = (this.position * 100) + '%';
+        // this.container.style.left = (this.position * 100) + '%';
 
-	    // change color of current page in pagination
-	    [].forEach.call(this.lis, function(item) {
-	        item.classList.remove('currentPage');
-	    });
-	    this.lis[-this.position].classList.add('currentPage');
-	}
+        // change color of current page in pagination
+        [].forEach.call(this.lis, function(item) {
+            item.classList.remove('currentPage');
+        });
+        this.lis[-this.position].classList.add('currentPage');
+    }
+    this.container.style.left = (this.position * 100) + '%';
 }
 
 // set new width and pagination
 Loader.prototype._repaint = function(){ //TODO when add new videos dont delete all pagination
+    console.log('repaint');
     var countOfPages = document.getElementsByClassName('item').length / this.countVideosOnPage;
     this.pagination.innerHTML = '';
     for (var i = 0; i < countOfPages; ++i) {
@@ -234,9 +242,10 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
     this.container.style.left = (this.position * 100) + '%';
 
     // handler for clicks on pagination
-    this.pagination.addEventListener('click', function(event) { // TODO: if the page is the last, load new!!!
+    this.pagination.onclick = function(event) { // TODO: if the page is the last, load new!!!
+        console.log('pagination click');
         if (event.target.tagName !== 'LI') return;
-        this.position = -[].indexOf.call(this.pagination.children, event.target); // warning! 'this' will not work. BIND?
+        this.position = -[].indexOf.call(this.pagination.children, event.target); 
         // smooth animation
         this.container.classList.add('smooth');
          // set new position
@@ -247,7 +256,12 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
             item.classList.remove('currentPage');
         });
         event.target.classList.add('currentPage');
-    }.bind(this));
+
+        if (-this.position === this.lis.length - 1) {
+            this.pagination.onclick = null;
+            this.loadData(); 
+        }
+    }.bind(this);
 
     this.lis[-this.position].classList.add('currentPage'); // TODO warning! there may be en error! 
 }
