@@ -46,7 +46,8 @@ header input {
   outline: none;
   border: none;
   background-color: #d4c8bf;  
-  transition: 0.2s;
+  -webkit-transition: 0.2s;
+          transition: 0.2s;
 }
 header input:focus {
   border: 2px solid #666;
@@ -55,6 +56,12 @@ header input::-webkit-input-placeholder {
   color: #56514d;
 }
 header input:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+header input::-moz-placeholder {
+  color: #56514d;
+}
+header input:focus::-moz-placeholder {
   color: transparent;
 }
 header input:-ms-input-placeholder {
@@ -102,7 +109,8 @@ ul.container {
 .container h3 a {
   text-decoration: none;
   color: #db6539;
-  transition: 0.2s;
+  -webkit-transition: 0.2s;
+          transition: 0.2s;
 }
 .container h3 a:hover {
   color: #eab39e;
@@ -138,7 +146,8 @@ p.description {
   cursor: pointer;
   margin: 0 4px;
   background-color: #bdab9e;
-  transition: 0.2s;
+  -webkit-transition: 0.2s;
+          transition: 0.2s;
 }
 
 .pagination .currentPage {
@@ -147,20 +156,39 @@ p.description {
 }
 
 
-.message {
+/* messages and tooltips */
+
+.message, .tooltip {
   position: absolute;
+  background-color: #db6539;
+  color: #fff;
+  opacity: 0;
+}
+
+.message {
   margin: 10px;
   top: 0;
   right: 0;
   padding: 5px 10px;
   border-radius: 10px;
-  background-color: #db6539;
-  color: #fff;
-  opacity: 0;
   -webkit-animation: show 3s ease-out;
      -moz-animation: show 3s ease-out;
       -ms-animation: show 3s ease-out;
           animation: show 3s ease-out;
+}
+
+.tooltip {
+  width: 23px;
+  height: 20px;
+  font-size: 0.8rem;
+  text-align: center;
+  border-radius: 5px;
+  margin: 5px;
+  padding-top: 3px;
+  -webkit-animation: show 0.7s ease-out;
+     -moz-animation: show 0.7s ease-out;
+      -ms-animation: show 0.7s ease-out;
+          animation: show 0.7s ease-out;
 }
 
 

@@ -265,6 +265,26 @@ Loader.prototype._repaint = function(){
         }
     }.bind(this);
 
+    this.pagination.onmouseover = function(event) {
+        if (event.target.tagName !== 'LI') return;
+        var el = document.createElement('div');
+        el.classList.add('tooltip');
+        el.innerHTML = [].indexOf.call(this.pagination.children, event.target) + 1;
+        el.style.left = event.pageX - 11 + 'px';
+        el.style.top = event.pageY - 40 + 'px';
+        document.body.appendChild(el);
+
+        // listen when animation ends and then delete tooltip
+        el.addEventListener('webkitAnimationEnd', function(event) {
+            if (event.animationName === 'show')
+            event.target.remove();
+        });
+        el.addEventListener('animationend', function(event) {
+            if (event.animationName === 'show')
+            event.target.remove();
+        });
+    }.bind(this);
+
     this.lis[-this.position].classList.add('currentPage');
 }
 
@@ -285,6 +305,7 @@ Loader.prototype.showMessage = function(message){
     el.classList.add('message');
     el.innerHTML = message;
     document.body.appendChild(el);
+    // listen when animation ends and then delete message
     el.addEventListener('webkitAnimationEnd', function(event) {
         if (event.animationName === 'show')
         event.target.remove();
@@ -304,7 +325,6 @@ TODO list
 
 add animation
  - smooth load data (smth as in the task animation)
- - show number of page when hover
  - add support press arrows to switch page
  - try to change pagination
 */
