@@ -18,7 +18,6 @@ Loader.prototype.setKeyword = function(keyword) {
 
 // the first request
 Loader.prototype.loadData = function(){
-    console.log('loadData');
 	var keywordLink = '&q=' + encodeURIComponent(this.keyword);
     var link = this.BASIC_LINK + this.resultsCount + keywordLink + this._nextToken; 
     var request = new XMLHttpRequest();
@@ -28,9 +27,8 @@ Loader.prototype.loadData = function(){
     request.send();
     
     request.onreadystatechange = function () {
-        if (request.readyState == 4) {
-            if (request.status == 200) { 
-                console.log('onreadystatechange loadData');
+        if (request.readyState === 4) {
+            if (request.status === 200) { 
                     this._loadStatisticsData(request.responseText);
 
                     // repaint page when change width of window
@@ -46,20 +44,27 @@ Loader.prototype.loadData = function(){
 		                this._repaint();
 		            }.bind(this);
             }
-        }    
+            else {
+                this.showMessage('Error! Status: ' + request.status + ' ' + request.statusText);
+            }
+        } 
+        else if (request.status !== 200) {
+            this.showMessage('Error! Status: ' + request.status);
+        }   
     }.bind(this); 
+
 };
 
 // the second request by id to load normal title and count of views
 Loader.prototype._loadStatisticsData = function(firstResponse) {
-    console.log('loadStatisticsData');
     var videoIds = [];
     var request = new XMLHttpRequest();
     var link;
     var responseData = JSON.parse(firstResponse);
     this.totalResults = responseData.pageInfo.totalResults;
     if (this.totalResults === 0) {
-    	console.log('no items!'); // TODO show some message!
+        this.showMessage('No videos!');
+        this._repaint = function(){}; // without this errors will occur
     	return;
     }
     // if the videos can be loaded to 
@@ -80,9 +85,8 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     request.send();
      
     request.onreadystatechange = function () {
-        if (request.readyState == 4) {
-            if (request.status == 200) { 
-                console.log('onreadystatechange loadStatisticsData');
+        if (request.readyState === 4) {
+            if (request.status === 200) { 
                 this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText)); // TODO add listeners to view videos
 
                 // swipe: drag the container and switch the pages
@@ -124,6 +128,12 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
 				    }.bind(this);	    
 				}.bind(this));
             }
+            else {
+                this.showMessage('Error! Status: ' + request.status + ' ' + request.statusText);
+            }
+        }
+        else if (request.status !== 200) {
+            this.showMessage('Error! Status: ' + request.status + ' ');
         }
     }.bind(this);
 }
@@ -136,8 +146,7 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
 
     // next page for search
     if (searchResponse.nextPageToken == undefined) this.loadData = function(){
-    	console.log('no more data!'); // TODO show message instead of console
-    	// this.position++;
+    	this.showMessage('No more videos!');
     	this.container.style.left = (this.position * 100) + '%';
     	[].forEach.call(this.lis, function(item) {
 	        item.classList.remove('currentPage');
@@ -180,7 +189,6 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
         this.container.appendChild(element); 
     }
 
-    console.log('loadvideostoContainer');
     this._repaint();
 }
 
@@ -204,28 +212,23 @@ Loader.prototype._switchPage = function(startPosition) {
         if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
             this.position = -(this.lis.length - 1);
         }
-        // this.container.style.left = (this.position * 100) + '%';
         this.loadData(); 
-        console.log('pos ' + (-this.position) + '\tlis ' + (this.lis.length - 1));
         document.onmousemove = null;
         document.onmouseup = null;
     }
     else {
-	    // set new position
-        // this.container.style.left = (this.position * 100) + '%';
-
         // change color of current page in pagination
         [].forEach.call(this.lis, function(item) {
             item.classList.remove('currentPage');
         });
         this.lis[-this.position].classList.add('currentPage');
     }
+    // set new position
     this.container.style.left = (this.position * 100) + '%';
 }
 
 // set new width and pagination
 Loader.prototype._repaint = function(){ //TODO when add new videos dont delete all pagination
-    console.log('repaint');
     var countOfPages = document.getElementsByClassName('item').length / this.countVideosOnPage;
     this.pagination.innerHTML = '';
     for (var i = 0; i < countOfPages; ++i) {
@@ -243,7 +246,6 @@ Loader.prototype._repaint = function(){ //TODO when add new videos dont delete a
 
     // handler for clicks on pagination
     this.pagination.onclick = function(event) { // TODO: if the page is the last, load new!!!
-        console.log('pagination click');
         if (event.target.tagName !== 'LI') return;
         this.position = -[].indexOf.call(this.pagination.children, event.target); 
         // smooth animation
@@ -277,6 +279,21 @@ Loader.prototype.cleanPage = function(){
     this.position = 0;
 };
 
+Loader.prototype.showMessage = function(message){
+    var el = document.createElement('div');
+    el.classList.add('message');
+    el.innerHTML = message;
+    document.body.appendChild(el);
+    el.addEventListener('webkitAnimationEnd', function(event) {
+        if (event.animationName === 'show')
+        event.target.remove();
+    });
+    el.addEventListener('animationend', function(event) {
+        if (event.animationName === 'show')
+        event.target.remove();
+    });
+};
+
 
 
 
@@ -288,5 +305,4 @@ add animation
  - smooth load data (smth as in the task animation)
  - show number of page when hover
  - add support press arrows to switch page
- - add messages when videos are over
 */
