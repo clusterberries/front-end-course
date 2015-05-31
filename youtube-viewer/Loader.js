@@ -49,8 +49,8 @@ Loader.prototype.loadData = function(){
 		            }.bind(this);
             }
             else {
-                this.showMessage('Error! Status: ' + request.status + ' ' + request.statusText);
-            }
+                this.showMessage('Error! Status: ' + request.status);
+            }  
         } 
         else if (request.status !== 200) {
             this.showMessage('Error! Status: ' + request.status);
@@ -91,17 +91,104 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
             if (request.status === 200) { 
-                this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText)); // TODO add listeners to view videos
+                this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText));
                 this._addSwipeListeners();
-            }
-            else {
-                this.showMessage('Error! Status: ' + request.status + ' ' + request.statusText);
             }
         }
         else if (request.status !== 200) {
             this.showMessage('Error! Status: ' + request.status);
         }
     }.bind(this);
+}
+
+// function gets two respons and return list with necessary information
+Loader.prototype._convertResponseToList = function(searchResponse, videosResponse) {
+    var videosList = [];
+    searchResponse = JSON.parse(searchResponse);
+    videosResponse = JSON.parse(videosResponse).items;
+
+    // next page for search
+    if (searchResponse.nextPageToken == undefined) this.loadData = function(){
+    	this.showMessage('No more videos!');
+    	this.container.style.left = (this.position * 100) + '%';
+    	[].forEach.call(this.lis, function(item) {
+	        item.classList.remove('currentPage');
+	    });
+    	this.lis[-this.position].classList.add('currentPage');
+    };
+
+    this._nextToken = '&pageToken=' + searchResponse.nextPageToken;
+    searchResponse = searchResponse.items;
+
+    for (var i = 0; i < searchResponse.length; ++i) {
+        videosList[i] = {
+            // id: searchResponse[i].id.videoId,
+            youtubeLink: 'http://www.youtube.com/watch?v=' + searchResponse[i].id.videoId,
+            title: searchResponse[i].snippet.title,
+            description: searchResponse[i].snippet.description,
+            thumbnailUrl: searchResponse[i].snippet.thumbnails.high.url,
+            date: new Date(searchResponse[i].snippet.publishedAt).toDateString().slice(4), 
+            author: videosResponse[i].snippet.channelTitle,
+            views: videosResponse[i].statistics.viewCount
+        };
+    }
+
+    return videosList;
+ }
+
+// create elements and add to the container
+Loader.prototype._loadVideosToContainer = function(videosList) {
+    var element, htmlText, currNumber = this.container.getElementsByClassName('item').length;
+    for (var i = 0; i < videosList.length; ++i) {
+        element = document.createElement('li');
+        element.classList.add('item');
+        htmlText = '<img src="' + videosList[i].thumbnailUrl + '" draggable="false">\
+            <h3><a href="' + videosList[i].youtubeLink + '" draggable="false">' + videosList[i].title + '</a></h3>\
+            <p class="author">by ' + videosList[i].author + '</p>\
+            <p class="date">' + videosList[i].date + '</p>\
+            <p class="views">views: ' + videosList[i].views + '</p>\
+            <p class="description">' + videosList[i].description + '</p>';
+        element.innerHTML = htmlText;
+        this.container.appendChild(element); 
+    }
+
+    // create pagination arrows
+    element = document.getElementById('rightArrow');
+    if (element) {
+        element.remove();
+        document.getElementById('leftArrow').remove();
+    }
+    element = document.createElement('div');
+    element.classList.add('arrow');
+    element.setAttribute('id', 'rightArrow');
+    element.innerHTML = '&#9654;';
+    document.body.appendChild(element);
+    element.onclick = function(event) {
+        this.position--;
+        this.container.style.left = (this.position * 100) + '%';
+        this.lis[-this.position - 1].classList.remove('currentPage');
+        this.lis[-this.position].classList.add('currentPage');
+        if (-this.position === this.lis.length - 1) {
+            event.target.onclick = null;
+            this.loadData(); 
+        }
+        this._checkPagination();
+    }.bind(this);
+    element = document.createElement('div');
+    element.classList.add('arrow');
+    element.setAttribute('id', 'leftArrow');
+    element.innerHTML = '&#9664;';
+    element.onclick = function(event) {
+        if (this.position === 0) return;
+        this.position++;
+        this.container.style.left = (this.position * 100) + '%';
+        this.lis[-this.position + 1].classList.remove('currentPage');
+        this.lis[-this.position].classList.add('currentPage');
+        this._checkPagination();
+    }.bind(this);
+    document.body.appendChild(element);
+
+    this._repaint();
 }
 
 // TODO: try to refactor and unite handlers if possible
@@ -200,60 +287,6 @@ Loader.prototype._addSwipeListeners = function() {
 
 }
 
-// function gets two respons and return list with necessary information
-Loader.prototype._convertResponseToList = function(searchResponse, videosResponse) {
-    var videosList = [];
-    searchResponse = JSON.parse(searchResponse);
-    videosResponse = JSON.parse(videosResponse).items;
-
-    // next page for search
-    if (searchResponse.nextPageToken == undefined) this.loadData = function(){
-    	this.showMessage('No more videos!');
-    	this.container.style.left = (this.position * 100) + '%';
-    	[].forEach.call(this.lis, function(item) {
-	        item.classList.remove('currentPage');
-	    });
-    	this.lis[-this.position].classList.add('currentPage');
-    };
-
-    this._nextToken = '&pageToken=' + searchResponse.nextPageToken;
-    searchResponse = searchResponse.items;
-
-    for (var i = 0; i < searchResponse.length; ++i) {
-        videosList[i] = {
-            // id: searchResponse[i].id.videoId,
-            youtubeLink: 'http://www.youtube.com/watch?v=' + searchResponse[i].id.videoId,
-            title: searchResponse[i].snippet.title,
-            description: searchResponse[i].snippet.description,
-            thumbnailUrl: searchResponse[i].snippet.thumbnails.high.url,
-            date: new Date(searchResponse[i].snippet.publishedAt).toDateString().slice(4), 
-            author: videosResponse[i].snippet.channelTitle,
-            views: videosResponse[i].statistics.viewCount
-        };
-    }
-
-    return videosList;
- }
-
-// create elements and add to the container
-Loader.prototype._loadVideosToContainer = function(videosList) {
-    var element, htmlText, currNumber = this.container.getElementsByClassName('item').length;
-    for (var i = 0; i < videosList.length; ++i) {
-        element = document.createElement('li');
-        element.classList.add('item');
-        htmlText = '<img src="' + videosList[i].thumbnailUrl + '" draggable="false">\
-            <h3><a href="' + videosList[i].youtubeLink + '" draggable="false">' + videosList[i].title + '</a></h3>\
-            <p class="author">by ' + videosList[i].author + '</p>\
-            <p class="date">' + videosList[i].date + '</p>\
-            <p class="views">views: ' + videosList[i].views + '</p>\
-            <p class="description">' + videosList[i].description + '</p>';
-        element.innerHTML = htmlText;
-        this.container.appendChild(element); 
-    }
-
-    this._repaint();
-}
-
 // scroll current page to the beginning of window when swipe or mouseup
 Loader.prototype._switchPage = function(startPosition) {
     var endPosition = this.container.getBoundingClientRect().left;
@@ -293,12 +326,14 @@ Loader.prototype._switchPage = function(startPosition) {
     }
     // set new position
     this.container.style.left = (this.position * 100) + '%';
+    this._checkPagination();
 }
 
 // set new width, position and pagination
 Loader.prototype._repaint = function(){ 
     var countOfPages = document.getElementsByClassName('item').length / this.countVideosOnPage;
     this.pagination.innerHTML = '';
+    // create new pagination
     for (var i = 0; i < countOfPages; ++i) {
         this.pagination.appendChild(document.createElement('li'));
     }
@@ -353,6 +388,7 @@ Loader.prototype._repaint = function(){
     }.bind(this);
 
     this.lis[-this.position].classList.add('currentPage');
+    this._checkPagination();
 }
 
 // delete all content on page
@@ -365,6 +401,21 @@ Loader.prototype.cleanPage = function(){
 	this._nextToken = '';
     this.position = 0;
 };
+
+// check position of pogination and current page
+Loader.prototype._checkPagination = function() {
+    // I dont really understand how it should work and why now it works every other time
+    if (this.lis[-this.position].getBoundingClientRect().right > window.innerWidth - 40) {
+        console.log(-this.position);
+        this.pagination.style.right = this.lis[this.lis.length - 1].getBoundingClientRect().right - window.innerWidth + 'px';
+        this.pagination.style.left = '';
+    }
+    else if (this.lis[-this.position].getBoundingClientRect().left < 60) {
+        if (this.position === 0) this.pagination.style.left = '40px';
+        this.pagination.style.left = this.pagination.getBoundingClientRect().left - this.lis[0].getBoundingClientRect().left + 'px';
+        this.pagination.style.right = '';
+    }
+}
 
 // show message in the top right corner
 Loader.prototype.showMessage = function(message){
@@ -383,13 +434,3 @@ Loader.prototype.showMessage = function(message){
     });
 };
 
-
-
-
-
-/*
-TODO list
-
- - add support press arrows to switch page
- - try to change pagination
-*/

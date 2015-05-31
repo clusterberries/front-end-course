@@ -6,7 +6,7 @@
 
 html, body, main {
   height: 100%;
-  min-height: 350px;
+  min-height: 300px;
 }
 
 li {
@@ -25,7 +25,6 @@ main {
   background-color: #56514d;
   justify-content: space-between;
   overflow: hidden;
-
 }
 
 header, footer {
@@ -140,6 +139,11 @@ p.description {
 
 /* pagination */
 
+.pagination {
+  white-space: nowrap;
+  position: relative;
+}
+
 .pagination li {
   display: inline-block;
   width: 18px;
@@ -157,11 +161,53 @@ p.description {
   cursor: default;
 }
 
+.arrow {
+  position: absolute;
+  background-color: #bdab9e;
+  font-size: 1.3rem;
+  color: #302a27;
+  bottom: 0;
+  width: 32px;
+  height: 30px;
+  text-align: center;
+  border-radius: 5px;
+  margin: 5px;
+  padding-bottom: 2px;
+  opacity: 0.5;
+  -webkit-transition: 0.2s;
+          transition: 0.2s;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+
+}
+
+.arrow:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#rightArrow {
+  right: 0;
+}
+#leftArrow {
+  left: 0;
+}
+
+.right-align {
+  justify-content: flex-end;
+}
+.left-align {
+  justify-content: flex-start;
+}
+
+
 
 /* messages and tooltips */
 
 .message, .tooltip {
-  position: absolute;
+  position: fixed;
   background-color: #db6539;
   color: #fff;
   opacity: 0;
