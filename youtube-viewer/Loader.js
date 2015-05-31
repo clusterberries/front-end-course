@@ -1,3 +1,7 @@
+var touchmoveHandler2,  //these handlers must be grobal because they will be added and removed
+    touchstartHandler,  //in different methods. Unfortunately properties such as ontouchstart dont work
+    touchendHandler;  
+
 var Loader = function(container, pagination, resultsCount) {
 	this.container = container;
 	this.pagination = pagination;
@@ -107,11 +111,16 @@ Loader.prototype._addSwipeListeners = function() {
         startPosition,
         xPos,
         delX,
-        touchmoveHandler1,
-        touchmoveHandler2;
+        touchmoveHandler1;
 
-    // for touchscreen
-    this.container.addEventListener('touchstart', function (event) {
+    // for touchscreen // dont know why, but properties such ontouchmove dont work
+    touchendHandler = function() {
+        document.removeEventListener('touchmove', touchmoveHandler2);
+        this._switchPage(startPosition);  
+        document.body.style.cursor = 'default';
+    }.bind(this);
+
+    touchstartHandler = function (event) {
         if (event.touches.length != 1) { // need just one finger
             return;
         }
@@ -121,15 +130,10 @@ Loader.prototype._addSwipeListeners = function() {
 
         document.body.style.cursor = 'move';
 
-        document.addEventListener('touchmove', touchmoveHandler1);
-        
-        document.addEventListener('touchend', function() {
-            document.removeEventListener('touchmove', touchmoveHandler2);
-            this._switchPage(startPosition);  
-            document.body.style.cursor = 'default';
-        }.bind(this)); 
+        document.addEventListener('touchmove', touchmoveHandler1);    
+        document.addEventListener('touchend', touchendHandler); 
 
-    }.bind(this));
+    }.bind(this);
 
     touchmoveHandler2 = function(event) {
         // remove animation
@@ -156,8 +160,10 @@ Loader.prototype._addSwipeListeners = function() {
         document.addEventListener('touchmove', touchmoveHandler2);
     }.bind(this);
 
+    this.container.addEventListener('touchstart', touchstartHandler);
+
     // for mouse move
-    this.container.addEventListener('mousedown', function (event) {
+    this.container.onmousedown = function (event) {
         startPosition = this.container.getBoundingClientRect().left;
         xPos = event.clientX;
         delX = xPos - startPosition; // position of the cursor in the container
@@ -190,7 +196,7 @@ Loader.prototype._addSwipeListeners = function() {
             this._switchPage(startPosition);  
             document.body.style.cursor = 'default';
         }.bind(this);       
-    }.bind(this));
+    }.bind(this);
 
 }
 
@@ -273,6 +279,10 @@ Loader.prototype._switchPage = function(startPosition) {
         // dont switch pages before data loads
         document.onmousemove = null;
         document.onmouseup = null;
+        this.container.onmousedown = null;
+        document.removeEventListener('touchmove', touchmoveHandler2);
+        document.removeEventListener('touchend', touchendHandler);
+        this.container.removeEventListener('touchstart', touchstartHandler); 
     }
     else {
         // change color of current page in pagination
