@@ -10,18 +10,29 @@ var Iterator = function(arr, config) {
 	this.cyclic = config ? (config.cyclic || false) : false;
 	this.callback = config ? config.callback : undefined;
 	this.currentPosition = 0;
+	// check current and width when arr is changed
+	// setObserve(this);
 }
 
-Iterator.prototype.forward = function(n) {
-	
-}
-
-Iterator.prototype.backward = function(n) {
-
-}
+// what can I do with this shit? :(
+/*function setObserve(obj) {
+	Array.observe(obj.arr, function() {
+		if (this.width > this.arr.length) {
+			this.width = (this.arr.length !== 0) ? this.arr.length : 1;
+		}
+		if (this.currentPosition >= this.arr.length) {
+			this.currentPosition %= this.arr.length; 
+		}
+		console.log(this.currentPosition);
+	}.bind(obj));
+}*/
 
 Iterator.prototype.current = function() {
-	// return arr.slice
+	var subarr = this.arr.slice(this.currentPosition, this.currentPosition + this.width);
+	if (this.cyclic && this.currentPosition + this.width >= this.arr.length) {
+		subarr = subarr.concat(this.arr.slice(0, (this.currentPosition + this.width) % this.arr.length));
+	}
+	return subarr;
 }
 
 Iterator.prototype.jumpTo = function(i) {
@@ -38,3 +49,22 @@ Iterator.prototype.jumpTo = function(i) {
 		}
 	}
 }
+
+Iterator.prototype.forward = function(n) {
+	if (!n || typeof n !== 'number') n = 1;
+	if (this.cyclic || this.currentPosition + n + this.width >= 0 && this.currentPosition + n + this.width < this.arr.length) {
+		this.jumpTo(this.currentPosition + n);
+		return this.current();
+	}
+	else {
+		this.currentPosition = this.arr.length - 1;
+		return this.current();
+	}
+}
+
+Iterator.prototype.backward = function(n) {
+
+}
+
+
+

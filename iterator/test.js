@@ -72,4 +72,119 @@ describe('Iterator', function() {
  		});
 	});
 
+	describe('#current', function() {
+		it('should return first one item when just initialize with arr', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.current().should.have.length(1);
+		    it.current()[0].should.equal(arr[0]);
+	  	});
+	  	it('should return first two items when just initialize with width 2', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {width: 2});
+		    it.current().should.have.length(2);
+		    it.current()[0].should.equal(arr[0]);
+		    it.current()[1].should.equal(arr[1]);
+	  	});
+	  	it('should return the last one item when window is not fit in and iterator isnt cyclic', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {width: 2});
+		    it.jumpTo(2);
+		    it.current().should.have.length(1);
+		    it.current()[0].should.equal(arr[2]);
+	  	});
+	  	it('should return the last one and the first one items when window is not fit in and iterator is cyclic', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {width: 2, cyclic: true});
+		    it.jumpTo(2);
+		    it.current().should.have.length(2);
+		    it.current()[0].should.equal(arr[2]);
+		    it.current()[1].should.equal(arr[0]);
+	  	});
+	});
+
+/*	describe('observe', function() {
+		it('should change current position when slice arr and position is not fit any more', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.jumpTo(2);
+		    // console.log('in test 1: ' + it.currentPosition);
+		    // it.arr.pop();
+		    it.arr.pop();
+		    console.log('in test 2: ' + it.currentPosition);
+		    it.currentPosition.should.equal(1);
+	  	});
+  	it('should change width when slice arr and width isnt fit any more', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {width: 2});
+		    it.arr.pop();
+		    it.arr.pop();
+		    it.width.should.equal(1);
+	  	});
+	});*/
+
+	describe('#forward', function() {
+		it('should return correct value when move forward 1 step', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.forward(1)[0].should.equal(arr[1]);
+	  	});
+	  	it('should not move forward if iterator in the end of no cyclic array', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.forward(4)[0].should.equal(arr[2]); 
+ 		});
+ 		it('should move to the beginning of cyclic array when it ends', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {cyclic: true});
+		    it.forward(4)[0].should.equal(arr[1]);	    
+ 		});
+ 		it('should move backward if the value is negative', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.jumpTo(2);
+		    it.forward(-1)[0].should.equal(arr[1]);
+	  	});
+	  	it('should move forward 1 step when value is uncorrect or is ubsent', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.forward()[0].should.equal(arr[1]);
+		    var it = new Iterator(arr);
+		    it.forward('t')[0].should.equal(arr[1]);
+	  	});
+	});
+
+	describe('#backward', function() {
+		it('should return correct value when move backward 1 step', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.forward(1);
+		    it.backward(1)[0].should.equal(arr[0]);
+	  	});
+	  	it('should not move backward if iterator in the beggining of no cyclic array', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.backward(4)[0].should.equal(arr[0]); 
+ 		});
+ 		it('should move to the end of cyclic', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {cyclic: true});
+		    it.backward(4)[0].should.equal(arr[2]);	    
+ 		});
+ 		it('should move forward if the value is negative', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.backward(-1)[0].should.equal(arr[1]);
+	  	});
+	  	it('should move backward 1 step when value is uncorrect or is ubsent', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.forward();
+		    it.backward()[0].should.equal(arr[0]);
+		    var it = new Iterator(arr);
+		    it.forward();
+		    it.backward()[0].should.equal(arr[0]);
+	  	});
+	});
+
 });
