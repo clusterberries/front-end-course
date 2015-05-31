@@ -88,43 +88,7 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
         if (request.readyState === 4) {
             if (request.status === 200) { 
                 this._loadVideosToContainer(this._convertResponseToList(firstResponse, request.responseText)); // TODO add listeners to view videos
-
-                // swipe: drag the container and switch the pages
-                this.container.addEventListener('mousedown', function (event) {
-				    var leftDirection; // the first direction of cursor move
-				    var startPosition = this.container.getBoundingClientRect().left;
-				    var xPos = event.clientX;
-				    var delX = xPos - startPosition; // position of the cursor in the container
-				    document.body.style.cursor = 'move';
-
-				    document.onmousemove = function(event) {        
-				        if (Math.abs(xPos - event.clientX) < 7) return; 
-				        if (xPos > event.clientX) leftDirection = true;
-				        else leftDirection = false;
-				        // after definition of cursor direction create new handler
-				        document.onmousemove = function(event) {
-				            // remove animation
-				            this.container.classList.remove('smooth');
-				            // if the direction of the cursor is the same
-				            if (xPos > event.clientX === leftDirection) {
-				                this.container.style.left = (event.clientX - delX) + 'px';
-				                xPos = event.clientX;
-				            } // if user change direction of the cursor switch the page
-				            else {
-				                this._switchPage(startPosition);
-				                startPosition = this.container.getBoundingClientRect().left;
-				                xPos = event.clientX;
-				                delX = xPos - startPosition;
-				            }   
-				        }.bind(this);
-				    }.bind(this);
-
-				    document.onmouseup = function() {
-				        document.onmousemove = null;
-				        this._switchPage(startPosition);  
-				        document.body.style.cursor = 'default';
-				    }.bind(this);	    
-				}.bind(this));
+                this._addSwipeListeners();
             }
             else {
                 this.showMessage('Error! Status: ' + request.status + ' ' + request.statusText);
@@ -134,6 +98,100 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
             this.showMessage('Error! Status: ' + request.status);
         }
     }.bind(this);
+}
+
+// TODO: try to refactor and unite handlers if possible
+// swipe: drag the container and switch the pages with mouse and with finger
+Loader.prototype._addSwipeListeners = function() {
+    var leftDirection, // the first direction of cursor/finger move
+        startPosition,
+        xPos,
+        delX,
+        touchmoveHandler1,
+        touchmoveHandler2;
+
+    // for touchscreen
+    this.container.addEventListener('touchstart', function (event) {
+        if (event.touches.length != 1) { // need just one finger
+            return;
+        }
+        startPosition = this.container.getBoundingClientRect().left;
+        xPos = event.targetTouches[0].clientX;
+        delX = xPos - startPosition; // position of the touch in the container
+
+        document.body.style.cursor = 'move';
+
+        document.addEventListener('touchmove', touchmoveHandler1);
+        
+        document.addEventListener('touchend', function() {
+            document.removeEventListener('touchmove', touchmoveHandler2);
+            this._switchPage(startPosition);  
+            document.body.style.cursor = 'default';
+        }.bind(this)); 
+
+    }.bind(this));
+
+    touchmoveHandler2 = function(event) {
+        // remove animation
+        this.container.classList.remove('smooth');
+        // if the direction of the touch is the same
+        if (xPos > event.targetTouches[0].clientX === leftDirection) {
+            this.container.style.left = (event.targetTouches[0].clientX - delX) + 'px';
+            xPos = event.targetTouches[0].clientX;
+        } // if user change direction of the touch switch the page
+        else {
+            this._switchPage(startPosition);
+            startPosition = this.container.getBoundingClientRect().left;
+            xPos = event.targetTouches[0].clientX;
+            delX = xPos - startPosition;
+        } 
+    }.bind(this);
+
+    touchmoveHandler1 = function(event) {
+        if (Math.abs(xPos - event.targetTouches[0].clientX) < 7) return; 
+        if (xPos > event.targetTouches[0].clientX) leftDirection = true;
+        else leftDirection = false;
+        // after definition of touch direction create new handler
+        document.removeEventListener('touchmove', touchmoveHandler1);
+        document.addEventListener('touchmove', touchmoveHandler2);
+    }.bind(this);
+
+    // for mouse move
+    this.container.addEventListener('mousedown', function (event) {
+        startPosition = this.container.getBoundingClientRect().left;
+        xPos = event.clientX;
+        delX = xPos - startPosition; // position of the cursor in the container
+        document.body.style.cursor = 'move';
+
+        document.onmousemove = function(event) {        
+            if (Math.abs(xPos - event.clientX) < 7) return; 
+            if (xPos > event.clientX) leftDirection = true;
+            else leftDirection = false;
+            // after definition of cursor direction create new handler
+            document.onmousemove = function(event) {
+                // remove animation
+                this.container.classList.remove('smooth');
+                // if the direction of the cursor is the same
+                if (xPos > event.clientX === leftDirection) {
+                    this.container.style.left = (event.clientX - delX) + 'px';
+                    xPos = event.clientX;
+                } // if user change direction of the cursor switch the page
+                else {
+                    this._switchPage(startPosition);
+                    startPosition = this.container.getBoundingClientRect().left;
+                    xPos = event.clientX;
+                    delX = xPos - startPosition;
+                }   
+            }.bind(this);
+        }.bind(this);
+
+        document.onmouseup = function() {
+            document.onmousemove = null;
+            this._switchPage(startPosition);  
+            document.body.style.cursor = 'default';
+        }.bind(this);       
+    }.bind(this));
+
 }
 
 // function gets two respons and return list with necessary information
@@ -261,7 +319,6 @@ Loader.prototype._repaint = function(){
 
         if (-this.position === this.lis.length - 1) {
             this.loadData(); 
-            //this.pagination.onclick = null; // TODO: without this line loading was buggy. But now?..
         }
     }.bind(this);
 
