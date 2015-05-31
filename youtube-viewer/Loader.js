@@ -69,6 +69,10 @@ Loader.prototype._loadStatisticsData = function(firstResponse) {
     if (this.totalResults === 0) {
         this.showMessage('No videos!');
         this._repaint = function(){}; // without this errors will occur
+        if (document.getElementById('leftArrow')) {
+            document.getElementById('leftArrow').remove();
+            document.getElementById('rightArrow').remove();
+        }
     	return;
     }
     // if the videos can be loaded to 
@@ -115,6 +119,8 @@ Loader.prototype._convertResponseToList = function(searchResponse, videosRespons
 	        item.classList.remove('currentPage');
 	    });
     	this.lis[-this.position].classList.add('currentPage');
+        this._addSwipeListeners();
+        this._addArrowsListeners();
     };
 
     this._nextToken = '&pageToken=' + searchResponse.nextPageToken;
@@ -152,9 +158,15 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
         this.container.appendChild(element); 
     }
 
-    // create pagination arrows
+    this._addArrowsListeners();
+    this._repaint();
+}
+
+// create pagination arrows and add listeners
+Loader.prototype._addArrowsListeners = function() {
+    var element;
     element = document.getElementById('rightArrow');
-    if (element) {
+    if (element) { // remove old
         element.remove();
         document.getElementById('leftArrow').remove();
     }
@@ -165,6 +177,9 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
     document.body.appendChild(element);
     element.onclick = function(event) {
         this.position--;
+        if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
+                this.position = -(this.lis.length - 1);
+        }
         this.container.style.left = (this.position * 100) + '%';
         this.lis[-this.position - 1].classList.remove('currentPage');
         this.lis[-this.position].classList.add('currentPage');
@@ -187,12 +202,9 @@ Loader.prototype._loadVideosToContainer = function(videosList) {
         this._checkPagination();
     }.bind(this);
     document.body.appendChild(element);
-
-    this._repaint();
 }
 
-// TODO: try to refactor and unite handlers if possible
-// swipe: drag the container and switch the pages with mouse and with finger
+// swipe: drag the container and switch the pages with mouse or with finger
 Loader.prototype._addSwipeListeners = function() {
     var leftDirection, // the first direction of cursor/finger move
         startPosition,
@@ -308,7 +320,6 @@ Loader.prototype._switchPage = function(startPosition) {
         if (this._nextToken === '&pageToken=undefined' && -this.position >= this.lis.length - 1) {
             this.position = -(this.lis.length - 1);
         }
-        this.loadData(); 
         // dont switch pages before data loads
         document.onmousemove = null;
         document.onmouseup = null;
@@ -316,6 +327,8 @@ Loader.prototype._switchPage = function(startPosition) {
         document.removeEventListener('touchmove', touchmoveHandler2);
         document.removeEventListener('touchend', touchendHandler);
         this.container.removeEventListener('touchstart', touchstartHandler); 
+
+        this.loadData(); 
     }
     else {
         // change color of current page in pagination

@@ -17,13 +17,8 @@ window.onload = function() {
         if (event.keyCode === 13) { // press enter
             loader = new Loader(document.getElementById('ulContainer'), document.getElementById('switchPages'), resultsCount);
             // clean old data if it exists
-            loader.cleanPage(); 
-            // for testing: // these values are not always the same, but they are somewhere in the region
-            // javascript00 - load 24 items
-            // javascript88 - load 1 items
-            // javascript88f - load 0 items          
-            loader.setKeyword('javascript');// TODO delete this                
-            // loader.setKeyword(this.value );               
+            loader.cleanPage();                      
+            loader.setKeyword(this.value);               
             loader.loadData();
         }
     }
