@@ -26,11 +26,10 @@ describe('Iterator', function() {
 		    it.cyclic.should.equal(true);
 		    it.callback.should.be.a('function');
 		});
-		it('should throw error when initialize with incorrect value', function() {
+		it('should throw error when initialize with incorrect array', function() {
 		    Iterator.should.throw(Error);
 		    Iterator.bind(null, 1).should.throw(TypeError);
 		    Iterator.bind(null, 't').should.throw(TypeError);
-		    Iterator.bind(null, [1, 2], 't').should.not.throw(TypeError);
 		});
 		it('should initialize with default config when it is incorrect', function() {
 		    var arr = [1, 2, 3];
@@ -57,8 +56,8 @@ describe('Iterator', function() {
 	  	it('should throw an error when jump out the range and iterator is not cyclic', function() {
 		    var arr = [1, 2, 3];
 		    var it = new Iterator(arr);
-		    it.jumpTo.bind(null, 5).should.throw(RangeError);
-		    it.jumpTo.bind(null, -1).should.throw(RangeError);
+		    it.jumpTo.bind(it, 5).should.throw(RangeError);
+		    it.jumpTo.bind(it, -1).should.throw(RangeError);
  		});
  		it('should calculate correct current item when jump out the range and iterator is cyclic', function() {
 		    var arr = [1, 2, 3];
@@ -184,6 +183,59 @@ describe('Iterator', function() {
 		    var it = new Iterator(arr);
 		    it.forward();
 		    it.backward()[0].should.equal(arr[0]);
+	  	});
+	});
+
+	
+	describe('observe', function() {
+		it('should set current position to the last item when shorten arr and position is not fit any more in no cyclic arr', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr);
+		    it.jumpTo(2);
+		    arr.pop();
+		    it.current()[0].should.equal(arr[1]);
+	  	});
+	  	it('should cyclically change current position when shorten arr and position is not fit any more in cyclic arr', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {cyclic: true});
+		    it.jumpTo(2);
+		    arr.pop();
+		    it.current()[0].should.equal(arr[0]);
+	  	});
+  		it('should change width when slice arr and width isnt fit any more', function() {
+		    var arr = [1, 2, 3];
+		    var it = new Iterator(arr, {width: 3});
+		    arr.pop();
+		    arr.pop();
+		    it.current().should.have.length(1);;
+		    it.width.should.equal(1);
+	  	});
+	});
+
+	describe('customWindowFunction', function() {
+		it('should set new window width every step forward or backward', function() {
+		    var arr = [1, 2, 3, 4, 5];
+		    var it = new Iterator(arr, {callback: function(old_width) {
+		    	return ++old_width;
+		    }});
+		    it.current()[0].should.equal(arr[0]);
+		    it.forward().should.have.length(2);
+		    it.current()[0].should.equal(arr[1]);
+		    it.current()[1].should.equal(arr[2]);
+
+		    it.forward().should.have.length(3);
+		    it.current()[0].should.equal(arr[2]);
+		    it.current()[1].should.equal(arr[3]);
+		    it.current()[2].should.equal(arr[4]);
+
+		    it.forward().should.have.length(2);
+		    it.current()[0].should.equal(arr[3]);
+		    it.current()[1].should.equal(arr[4]);
+
+		    it.backward().should.have.length(3);
+		    it.current()[0].should.equal(arr[2]);
+		    it.current()[1].should.equal(arr[3]);
+		    it.current()[2].should.equal(arr[4]);
 	  	});
 	});
 
