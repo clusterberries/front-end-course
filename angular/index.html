@@ -8,8 +8,18 @@
 <body ng-app="mod">
 
 	<div ng-controller="controller">
-		<p><input value="Get repos" type="button" ng-click="search()"></p>
-		<div ng-repeat="repo in repos track by $index" class="item">
+		<div>
+			<label>Filter: <input ng-model="filterText" ng-change="search()"></label>
+			<p>Sort by name: 
+			<select  ng-options="type as type for type in searchTypes" ng-model="sortType" ng-change="search()">
+<!-- 				<option value="asc">asc</option>
+<option value="des">des</option> -->
+			</select></p>
+			<p>Limit: <input type="text" ng-model="limit" ng-keydown="search()"></p>
+			<p><input value="Get repos" type="button" ng-click="search()"></p>
+		</div>
+
+		<div ng-repeat="repo in repos | filter:filterText" class="item">
 			<div>
 			Repo: <a href='{{repo.html_url}}'>{{repo.full_name}}</a><br>		
 			User <span>{{repo.owner.id}}: </span><span ng-bind='repo.owner.login'></span><br>
