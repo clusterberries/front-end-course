@@ -1,26 +1,32 @@
 var module = angular.module('mod', []);
 
-module.controller('controller', ['$scope', '$http', 'filterFilter', function (scope, $http, filterFilter){
+module.controller('controller', ['$scope', '$http', 'repository', function (scope, $http, repository){
 	scope.searchTypes = ['asc', 'des'];
 	scope.sortType = scope.searchTypes[0];
 	scope.limit = 10;
 	scope.filterText = '';
-	scope.search = function() {
-		$http.get('repositories.json').then(function(response) {
-			var resp = response.data;
-			resp = scope.sortType === 'asc' ? resp.sort(function(a, b) {
-				if (a.full_name.toLowerCase() > b.full_name.toLowerCase()) return 1;
-				else if (a.full_name.toLowerCase() === b.full_name.toLowerCase()) return 0;
-				else return -1;
-			})
-			: resp.sort(function(a, b) {
-				if (a.full_name.toLowerCase() < b.full_name.toLowerCase()) return 1;
-				else if (a.full_name.toLowerCase() === b.full_name.toLowerCase()) return 0;
-				else return -1;
-			});
-			resp = filterFilter(resp, scope.filterText);
-			scope.repos = resp.slice(0, scope.limit);
-		});
-	}
+	scope.maxSize = '500';
+	scope.minForks = 0;
+	scope.minStars = 0;
+	repository.async(scope.filterText, scope.minForks, scope.maxSize, scope.minStars, scope.limit
+		).then(function(resp) {
+		scope.repos = resp;
+		console.log(resp);
+	});
 
 }]);
+
+module.service('repository', function($http) {
+
+	var baseUrl = "https://api.github.com";
+	var repository = {
+	    async: function(filterText, minForks, maxSize, minStars, limit) {
+		    var promise = $http.get(baseUrl + '/search/repositories?q=' + filterText + '+forks:>=' + minForks + '+size:<' + maxSize + '+stars:>=' + minStars
+		    ).then(function (response) {
+		    	return response.data.items.slice(0, limit);;
+		    });
+		    return promise;
+	    }
+	};
+	return repository;
+});
