@@ -15,7 +15,8 @@
 		Repo: <a href='{{repo.html_url}}'>{{repo.full_name}}</a><br>
 		<span>Language: {{repo.language}}</span><br>
 		User <span>{{repo.owner.id}}: </span><span ng-bind='repo.owner.login'></span><br>
-		<img style='width:70px;' ng-src='{{repo.owner.avatar_url}}'>
+		<img style='width:70px;' ng-src='{{repo.owner.avatar_url}}'><br>
+		<a href="#/details/{{repo.id}}" ng-click="setRepos({{repo}},{{repos}})">Details</a>
 		</div>
 	</div>
 </div>

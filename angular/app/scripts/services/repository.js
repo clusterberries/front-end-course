@@ -15,7 +15,7 @@ angular.module('githubSearchApp')
 	    async: function(filterText, minForks, maxSize, minStars, limit) {
 		    var promise = $http.get(baseUrl + '/search/repositories?q=' + filterText + '+forks:>=' + minForks + '+size:<' + maxSize + '+stars:>=' + minStars
 		    ).then(function (response) {
-		    	return response.data.items.slice(0, limit);;
+		    	return response.data.items.slice(0, limit);
 		    });
 		    return promise;
 	    }
