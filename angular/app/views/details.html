@@ -1,0 +1,14 @@
+<div ng-controller="DetailsCtrl">
+	<a href="#/">Back</a>
+	<div>
+	<h2>Repo: <a href='{{repo.html_url}}'>{{repo.full_name}}</a></h2>
+	<span>Language: {{repo.language}}</span><br>
+	User <span>{{repo.owner.id}}: </span><span ng-bind='repo.owner.login'></span><br>
+	<img style='width:100px;' ng-src='{{repo.owner.avatar_url}}'><br>
+	</div>
+	
+	<h3>Contributors:</h3>
+	<div ng-repeat="contributor in contributors" class="contributors">
+	User <span>{{contributor.id}}: {{contributor.login}}</span><br>
+	</div>
+</div>
