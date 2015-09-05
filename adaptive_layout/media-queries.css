@@ -1,0 +1,161 @@
+@media screen and (min-width: 1100px) {	
+	.banner .text {
+		right: 12%;
+	}
+
+	.banner img {
+		margin-left: 10%;
+	}
+
+	.block1 .block1_all {
+		max-width: 1200px;
+		height: 180px;
+		margin-right: auto;
+		margin-left: auto;
+		position: relative;
+	}
+}
+
+
+@media screen and (min-width: 1400px) {	
+	.banner .text {
+		right: 17%;
+	}
+
+	.banner img {
+		margin-left: 15%;
+	}
+}
+
+
+@media screen and (max-width: 900px) {	
+	main {
+		min-width: 0;
+	}
+
+	header .line div{
+		width: 25%;
+	}
+
+	header .line div:nth-child(5),
+	header .line div:nth-child(6),
+	header .line div:nth-child(7),
+	header .line div:nth-child(8) {
+		display: none;
+	}
+
+	nav .logo {
+		width: 22%;
+		padding-left: 1%;
+	}
+
+	nav ul{
+		width: 50%;
+	}
+
+	nav .for-consumers {
+		width: 25%;
+	}
+
+	nav .for-consumers img {
+		padding: 0px 5px;
+	}
+
+	.banner .text {
+		right: 3%;
+	}
+
+	.banner img {
+		margin-left: 0%;
+	}
+
+	.block2 div:nth-child(3) {
+		clear: left;
+	}
+	.block2 > div {
+		width: 48%;
+	}
+
+	footer .email, address {
+		margin-left: 1%;
+	}
+
+	address {
+		margin-left: 2%;
+	}
+
+	footer ul {
+		padding-left: 1%;
+	}
+
+	footer .images {
+		margin-right: 1%;
+	}
+}
+
+
+@media screen and (max-width: 800px) {	
+	nav .logo, .banner img {
+		display: none;
+	}
+
+	nav ul{
+		width: 64%;
+	}
+
+	nav .for-consumers {
+		width: 33%;
+	}
+
+	.banner .text {
+		left: 7%;
+	}
+
+	footer .images {
+		float: left;
+		margin-left: 5%;
+	}
+
+	footer .email, address {
+		margin-left: 5%;
+	}
+
+	footer ul {
+		padding-left: 5%;
+	}
+
+}
+
+@media screen and (max-width: 620px) {
+	main {
+		min-width: 460px;
+	}
+
+	nav .for-consumers {
+		display: none;
+	}
+
+	nav ul{
+		width: 100%;
+	}
+
+	.banner {
+		background-image: url(img/banner-background2.png);
+	}
+
+	.banner .text {
+		left: 2%;
+	}
+
+	.block1 .arrow.ar1 {
+		left: 30%;
+	}
+
+	.block1 h2 {
+		font-size: 20px;
+	}
+
+	.block1 p {
+		font-size: 13px;
+	}
+}

@@ -1,0 +1,42 @@
+html, body {
+	margin: 0px;
+}
+
+header, footer {
+	background-color: #BD3232;
+	clear: both;
+}
+
+header {
+	height: 100px;
+}
+
+footer {
+	height: 70px;
+	
+}
+
+.main {
+	width: 100%;
+	height: 400px;	
+}
+
+.right, .left {
+	width: 150px;
+	background-color: #E19689;
+	height: 100%;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.middle {
+	margin: 0px 150px;
+	background-color: #89C6E1;
+	height: 100%;
+}
